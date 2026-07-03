@@ -1,0 +1,204 @@
+import { db, auth } from './config';
+import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, query, where, orderBy, serverTimestamp, Timestamp } from 'firebase/firestore';
+import { getIdToken } from 'firebase/auth';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+
+const getAuthToken = async () => {
+  const currentUser = auth.currentUser;
+  if (!currentUser) {
+    throw new Error('No authenticated user');
+  }
+  return await getIdToken(currentUser);
+};
+
+const backendRequest = async (path: string, options: RequestInit = {}) => {
+  const token = await getAuthToken();
+  const response = await fetch(`${BACKEND_URL}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      ...(options.headers || {}),
+    },
+  });
+
+  if (!response.ok) {
+    const errorBody = await response
+      .json()
+      .catch(() => ({ error: 'Unable to reach backend' }));
+    throw new Error(errorBody.error || 'Backend request failed');
+  }
+
+  return response.json();
+};
+
+export const getOrCreateUserProfile = async (firebaseUser: {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+}) => {
+  return backendRequest('/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      name: firebaseUser.displayName || 'Unknown User',
+      email: firebaseUser.email || '',
+      photoURL: firebaseUser.photoURL || '',
+    }),
+  });
+};
+
+export type TimestampLike =
+  | Timestamp
+  | Date
+  | string
+  | { seconds: number; nanoseconds: number }
+  | { _seconds: number; _nanoseconds: number };
+
+export interface User {
+  uid: string;
+  name: string;
+  email: string;
+  photoURL: string;
+  balance: number;
+  role: 'customer' | 'admin';
+  createdAt: TimestampLike;
+}
+
+export interface Transaction {
+  id?: string;
+  userId: string;
+  type: 'transfer' | 'deposit' | 'withdrawal';
+  amount: number;
+  recipient: string;
+  category: string;
+  timestamp: Timestamp;
+  flagged: boolean;
+}
+
+export interface VirtualCard {
+  userId: string;
+  cardNumber: string;
+  cardNumberMasked: string;
+  expiry: string;
+  status: 'active' | 'blocked';
+}
+
+export interface ContactForm {
+  id?: string;
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+  createdAt?: Timestamp;
+}
+
+export const getUser = async (uid: string): Promise<User | null> => {
+  const docRef = doc(db, 'users', uid);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    return docSnap.data() as User;
+  }
+  return null;
+};
+
+export const ensureUserProfile = async (firebaseUser: {
+  uid: string;
+  displayName: string | null;
+  email: string | null;
+  photoURL: string | null;
+}): Promise<User> => {
+  const existingUser = await getUser(firebaseUser.uid);
+  if (existingUser) {
+    return existingUser;
+  }
+
+  const userData: User = {
+    uid: firebaseUser.uid,
+    name: firebaseUser.displayName || 'Unknown User',
+    email: firebaseUser.email || '',
+    photoURL: firebaseUser.photoURL || '',
+    balance: 5000,
+    role: 'customer',
+    createdAt: serverTimestamp() as Timestamp,
+  };
+
+  await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+  return userData;
+};
+
+export const updateUser = async (uid: string, data: Partial<User>) => {
+  const docRef = doc(db, 'users', uid);
+  await updateDoc(docRef, data);
+};
+
+export const getAllUsers = async (): Promise<User[]> => {
+  const q = query(collection(db, 'users'), orderBy('createdAt', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(doc => doc.data() as User);
+};
+
+export const createTransaction = async (userId: string, data: Omit<Transaction, 'id' | 'userId' | 'timestamp'>) => {
+  const user = await getUser(userId);
+  if (!user) throw new Error("User not found");
+  
+  if (data.type === 'transfer' || data.type === 'withdrawal') {
+    if (user.balance < data.amount) throw new Error("Insufficient funds");
+    await updateUser(userId, { balance: user.balance - data.amount });
+  } else if (data.type === 'deposit') {
+    await updateUser(userId, { balance: user.balance + data.amount });
+  }
+
+  const txData = {
+    ...data,
+    userId,
+    timestamp: serverTimestamp(),
+  };
+
+  const docRef = await addDoc(collection(db, 'transactions'), txData);
+  return docRef.id;
+};
+
+export const getUserTransactions = async (userId: string): Promise<Transaction[]> => {
+  const q = query(collection(db, 'transactions'), where('userId', '==', userId), orderBy('timestamp', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction));
+};
+
+export const getAllTransactions = async (): Promise<Transaction[]> => {
+  const q = query(collection(db, 'transactions'), orderBy('timestamp', 'desc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction));
+};
+
+export const getVirtualCard = async (): Promise<VirtualCard> => {
+  return backendRequest('/virtual-card');
+};
+
+export const ensureVirtualCard = async (): Promise<VirtualCard> => {
+  return backendRequest('/virtual-card/repair', {
+    method: 'POST',
+  });
+};
+
+export const createVirtualCard = async (): Promise<VirtualCard> => {
+  return getVirtualCard();
+};
+
+export const updateVirtualCard = async (data: Partial<VirtualCard>) => {
+  return backendRequest('/virtual-card', {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  });
+};
+
+export const saveContactForm = async (data: Omit<ContactForm, 'id' | 'createdAt'>) => {
+  const contactData = {
+    ...data,
+    createdAt: serverTimestamp(),
+  };
+  
+  const docRef = await addDoc(collection(db, 'contact_form'), contactData);
+  return docRef.id;
+};

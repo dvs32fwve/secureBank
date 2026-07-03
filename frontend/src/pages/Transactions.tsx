@@ -1,0 +1,125 @@
+import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { getUserTransactions, Transaction } from '../firebase/firestore';
+import { Layout } from '../components/Layout';
+import { ProtectedRoute } from '../components/ProtectedRoute';
+import { motion } from 'framer-motion';
+import { ArrowDownRight, ArrowUpRight, ArrowLeftRight, Flag } from 'lucide-react';
+import { format } from 'date-fns';
+
+type Filter = 'all' | 'transfer' | 'deposit' | 'withdrawal';
+
+function formatCurrency(n: number) {
+  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+}
+
+const FILTERS: { label: string; value: Filter }[] = [
+  { label: 'All', value: 'all' },
+  { label: 'Transfers', value: 'transfer' },
+  { label: 'Deposits', value: 'deposit' },
+  { label: 'Withdrawals', value: 'withdrawal' },
+];
+
+function txIcon(type: string) {
+  if (type === 'deposit') return <ArrowDownRight className="h-4 w-4 text-emerald-400" />;
+  if (type === 'withdrawal') return <ArrowUpRight className="h-4 w-4 text-destructive" />;
+  return <ArrowLeftRight className="h-4 w-4 text-primary" />;
+}
+
+export default function Transactions() {
+  const { user } = useAuth();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<Filter>('all');
+
+  useEffect(() => {
+    if (!user) return;
+    getUserTransactions(user.uid).then(txs => {
+      setTransactions(txs);
+      setLoading(false);
+    });
+  }, [user]);
+
+  const filtered = filter === 'all' ? transactions : transactions.filter(t => t.type === filter);
+
+  return (
+    <ProtectedRoute>
+      <Layout>
+        <div className="space-y-6" data-testid="transactions-page">
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
+            <h1 className="text-2xl font-bold">Transactions</h1>
+            <p className="text-muted-foreground text-sm mt-1">Your complete transaction history</p>
+          </motion.div>
+
+          {/* Filters */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="flex gap-2 flex-wrap">
+            {FILTERS.map(f => (
+              <button
+                key={f.value}
+                data-testid={`filter-${f.value}`}
+                onClick={() => setFilter(f.value)}
+                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  filter === f.value
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:bg-accent'
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </motion.div>
+
+          {/* List */}
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }} className="bg-card border border-border rounded-2xl overflow-hidden">
+            {loading ? (
+              <div className="p-6 space-y-3">
+                {[...Array(5)].map((_, i) => <div key={i} className="h-16 bg-muted rounded-lg animate-pulse" />)}
+              </div>
+            ) : filtered.length === 0 ? (
+              <div className="p-12 text-center">
+                <ArrowLeftRight className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-40" />
+                <p className="text-muted-foreground">No transactions found</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {filtered.map((tx, i) => (
+                  <motion.div
+                    key={tx.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    className={`flex items-center justify-between p-4 hover:bg-accent/30 transition-colors ${tx.flagged ? 'bg-destructive/5' : ''}`}
+                    data-testid={`tx-item-${tx.id}`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="bg-muted p-2 rounded-lg shrink-0">{txIcon(tx.type)}</div>
+                      <div>
+                        <p className="text-sm font-medium">{tx.recipient || tx.type}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {tx.category} · {tx.timestamp ? format(tx.timestamp.toDate(), 'MMM d, yyyy · h:mm a') : '—'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {tx.flagged && (
+                        <span className="flex items-center gap-1 text-xs bg-destructive/20 text-destructive px-2 py-1 rounded-full" data-testid="badge-flagged">
+                          <Flag className="h-3 w-3" /> Flagged
+                        </span>
+                      )}
+                      <div className="text-right">
+                        <p className={`text-sm font-semibold ${tx.type === 'deposit' ? 'text-emerald-400' : 'text-destructive'}`}>
+                          {tx.type === 'deposit' ? '+' : '-'}{formatCurrency(tx.amount)}
+                        </p>
+                        <p className="text-xs text-muted-foreground capitalize">{tx.type}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </div>
+      </Layout>
+    </ProtectedRoute>
+  );
+}
