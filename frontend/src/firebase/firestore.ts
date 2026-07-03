@@ -33,6 +33,27 @@ const backendRequest = async (path: string, options: RequestInit = {}) => {
   return response.json();
 };
 
+export const parseTimestampToDate = (value: TimestampLike | null | undefined): Date | null => {
+  if (!value) return null;
+  if (value instanceof Date) return value;
+  if (typeof value === 'string' || typeof value === 'number') {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+  if (typeof (value as any).toDate === 'function') {
+    return (value as any).toDate();
+  }
+
+  const seconds = (value as any).seconds ?? (value as any)._seconds;
+  const nanoseconds = (value as any).nanoseconds ?? (value as any)._nanoseconds;
+
+  if (typeof seconds === 'number') {
+    return new Date(seconds * 1000 + Math.round((nanoseconds || 0) / 1e6));
+  }
+
+  return null;
+};
+
 export const getOrCreateUserProfile = async (firebaseUser: {
   uid: string;
   displayName: string | null;

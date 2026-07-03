@@ -8,6 +8,9 @@ node_modules/
 .env.local
 .env.*.local
 
+# Backend service account key
+backend/serviceKey.json
+
 # Build output
 dist/
 build/
