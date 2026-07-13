@@ -17,6 +17,7 @@ import Store from "./pages/Store";
 import ApiDocs from "./pages/ApiDocs";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTransactions from "./pages/admin/AdminTransactions";
+import AdminGovernance from "./pages/admin/AdminGovernance";
 import NotFound from "./pages/not-found";
 
 function RootRedirect() {
@@ -49,6 +50,7 @@ function Router() {
       <Route path="/api-docs" component={ApiDocs} />
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/transactions" component={AdminTransactions} />
+      <Route path="/admin/governance" component={AdminGovernance} />
       <Route component={NotFound} />
     </Switch>
   );

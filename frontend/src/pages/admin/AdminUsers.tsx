@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllUsers, User } from '../../firebase/firestore';
+import { getAllUsers, parseTimestampToDate, User } from '../../firebase/firestore';
 import { Layout } from '../../components/Layout';
 import { ProtectedRoute } from '../../components/ProtectedRoute';
 import { motion } from 'framer-motion';

@@ -69,7 +69,8 @@ export default function CustomerDashboard() {
     return () => unsubscribe();
   }, [user]);
 
-  const hasFlagged = transactions.some((t) => t.flagged);
+  const flaggedTx = transactions.find((t) => t.flagged);
+  const hasFlagged = !!flaggedTx;
 
   const categoryTotals = transactions.reduce<Record<string, number>>((acc, tx) => {
     if (tx.type !== 'deposit') {
@@ -95,7 +96,7 @@ export default function CustomerDashboard() {
     <ProtectedRoute>
       <Layout>
         <motion.div variants={container} initial="hidden" animate="show" className="space-y-6" data-testid="customer-dashboard-page">
-          {hasFlagged && <FraudBanner />}
+          {hasFlagged && <FraudBanner reason={flaggedTx?.flagReason ?? null} />}
 
           <motion.div variants={item} className="flex items-start justify-between">
             <div>

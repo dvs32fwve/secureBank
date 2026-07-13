@@ -111,13 +111,18 @@ export default function StorePage() {
 
     setSubmitting(true);
     try {
-      const isFlagged = selectedProduct.price > FRAUD_THRESHOLD;
+      // Evaluate local store fraud reasons (mirrors backend transfer rules where applicable)
+      const reasons: string[] = [];
+      if (selectedProduct.price > FRAUD_THRESHOLD) reasons.push('high_value');
+      if (selectedProduct.category.toLowerCase() === 'gift cards' && selectedProduct.price > 500) reasons.push('high_risk_category');
+
       await createTransaction(user.uid, {
         type: 'withdrawal',
         amount: selectedProduct.price,
         recipient: `${selectedProduct.name} via SecureBank VCC`,
         category: selectedProduct.category,
-        flagged: isFlagged,
+        flagged: reasons.length > 0,
+        flagReason: reasons.join('; '),
       });
 
       await refreshUser();

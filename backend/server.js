@@ -96,7 +96,16 @@ const repairVirtualCardForUser = async (userId) => {
 };
 
 // Middleware
-app.use(cors());
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000,https://securebank-6may.onrender.com').split(',').map(s => s.trim());
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (e.g., server-to-server, mobile, or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS policy does not allow access from the specified Origin.'), false);
+  },
+  optionsSuccessStatus: 200,
+}));
 app.use(express.json());
 
 // Routes
@@ -233,8 +242,40 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
     const recipientDoc = recipientQuery.docs[0];
     const recipientId = recipientDoc.id;
     const recipientData = recipientDoc.data();
-    const flagged = parsedAmount > 1000;
 
+    // Evaluate fraud rules and collect audit records
+    const ruleResults = [];
+
+    // Rule: High value transfer over $1000
+    const highValueThreshold = 1000;
+    const highValueOutcome = parsedAmount > highValueThreshold;
+    ruleResults.push({ rule: 'high_value', threshold: highValueThreshold, outcome: highValueOutcome, details: { amount: parsedAmount } });
+
+    // Rule: Same recipient twice within 10 minutes
+    const tenMinutesMs = 10 * 60 * 1000;
+    const recentSince = admin.firestore.Timestamp.fromMillis(Date.now() - tenMinutesMs);
+    const recentQuery = await db.collection('transactions')
+      .where('userId', '==', senderId)
+      .where('recipient', '==', normalizedRecipientEmail)
+      .where('type', '==', 'transfer')
+      .where('timestamp', '>=', recentSince)
+      .get();
+    const recentCount = recentQuery.size;
+    const rapidRepeatOutcome = recentCount >= 1;
+    ruleResults.push({ rule: 'rapid_repeat_recipient', threshold: '10m', outcome: rapidRepeatOutcome, details: { recentCount } });
+
+    // Rule: High-risk category (Gift Cards) and amount over $500
+    const highRiskCategory = 'gift cards';
+    const highRiskThreshold = 500;
+    const categoryLower = (category || '').toString().toLowerCase();
+    const highRiskOutcome = categoryLower === highRiskCategory && parsedAmount > highRiskThreshold;
+    ruleResults.push({ rule: 'high_risk_category', threshold: highRiskThreshold, outcome: highRiskOutcome, details: { category, amount: parsedAmount } });
+
+    const flagged = ruleResults.some(r => r.outcome === true);
+    const flagReasons = ruleResults.filter(r => r.outcome).map(r => r.rule);
+    const flagReasonText = flagReasons.length ? flagReasons.join('; ') : '';
+
+    // Batch write: balances, transactions, and audit logs
     const batch = db.batch();
     const senderTxRef = db.collection('transactions').doc();
     const recipientTxRef = db.collection('transactions').doc();
@@ -250,6 +291,7 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
       category,
       note,
       flagged,
+      flagReason: flagReasonText,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 
@@ -261,19 +303,95 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
       category: category || 'Transfer',
       note: note ? `Received from ${normalizedRecipientEmail}` : `Received from ${normalizedRecipientEmail}`,
       flagged,
+      flagReason: flagReasonText,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    // Per-rule audit log entries
+    for (const r of ruleResults) {
+      const auditRef = db.collection('auditLogs').doc();
+      batch.set(auditRef, {
+        userId: senderId,
+        transactionId: senderTxRef.id,
+        rule: r.rule,
+        threshold: r.threshold,
+        outcome: !!r.outcome,
+        details: r.details || {},
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
+
+    // Summary audit log
+    const summaryRef = db.collection('auditLogs').doc();
+    batch.set(summaryRef, {
+      userId: senderId,
+      transactionId: senderTxRef.id,
+      outcome: flagged,
+      flagReasons,
+      amount: parsedAmount,
+      recipient: normalizedRecipientEmail,
+      category,
+      timestamp: admin.firestore.FieldValue.serverTimestamp(),
+      note: 'Fraud evaluation summary',
     });
 
     await batch.commit();
 
-    return res.json({
-      success: true,
-      message: 'Transfer completed successfully',
-      flagged,
-    });
+    return res.json({ success: true, message: 'Transfer completed successfully', flagged, flagReasons });
   } catch (error) {
     console.error('Failed to create transfer:', error);
     return res.status(500).json({ error: 'Failed to create transfer' });
+  }
+});
+
+// Admin: audit / governance stats
+app.get('/admin/audit-stats', verifyFirebaseToken, async (req, res) => {
+  try {
+    const uid = req.uid;
+    const userRef = db.collection('users').doc(uid);
+    const userSnap = await userRef.get();
+    if (!userSnap.exists) return res.status(403).json({ error: 'Forbidden' });
+    const user = userSnap.data();
+    if (user?.role !== 'admin') return res.status(403).json({ error: 'Forbidden' });
+
+    const txSnap = await db.collection('transactions').get();
+    const total = txSnap.size;
+
+    let flaggedCount = 0;
+    const flaggedByCategory = {};
+    const flaggedByAmountRanges = {
+      '0-100': 0,
+      '101-500': 0,
+      '501-1000': 0,
+      '>1000': 0,
+    };
+
+    txSnap.docs.forEach((d) => {
+      const t = d.data();
+      if (t?.flagged) {
+        flaggedCount += 1;
+        const cat = (t.category || 'Other');
+        flaggedByCategory[cat] = (flaggedByCategory[cat] || 0) + 1;
+        const amt = Number(t.amount || 0);
+        if (amt <= 100) flaggedByAmountRanges['0-100'] += 1;
+        else if (amt <= 500) flaggedByAmountRanges['101-500'] += 1;
+        else if (amt <= 1000) flaggedByAmountRanges['501-1000'] += 1;
+        else flaggedByAmountRanges['>1000'] += 1;
+      }
+    });
+
+    const flaggedPercentage = total ? Math.round((flaggedCount / total) * 10000) / 100 : 0;
+
+    return res.json({
+      totalTransactions: total,
+      flaggedCount,
+      flaggedPercentage,
+      flaggedByCategory,
+      flaggedByAmountRanges,
+    });
+  } catch (error) {
+    console.error('Failed to fetch audit stats:', error);
+    return res.status(500).json({ error: 'Failed to fetch audit stats' });
   }
 });
 

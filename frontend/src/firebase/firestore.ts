@@ -3,6 +3,8 @@ import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, query, whe
 import { getIdToken } from 'firebase/auth';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+const DEFAULT_FALLBACKS = ['https://securebankbackend-thbc.onrender.com'];
+const FALLBACK_URLS = (import.meta.env.VITE_BACKEND_FALLBACKS || DEFAULT_FALLBACKS.join(',')).split(',').map(s => s.trim()).filter(Boolean);
 
 const getAuthToken = async () => {
   const currentUser = auth.currentUser;
@@ -14,23 +16,43 @@ const getAuthToken = async () => {
 
 const backendRequest = async (path: string, options: RequestInit = {}) => {
   const token = await getAuthToken();
-  const response = await fetch(`${BACKEND_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...(options.headers || {}),
-    },
-  });
 
-  if (!response.ok) {
-    const errorBody = await response
-      .json()
-      .catch(() => ({ error: 'Unable to reach backend' }));
-    throw new Error(errorBody.error || 'Backend request failed');
+  const makeRequest = async (baseUrl: string) => {
+    const res = await fetch(`${baseUrl}${path}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(options.headers || {}),
+      },
+    });
+
+    if (!res.ok) {
+      const errorBody = await res.json().catch(() => ({ error: 'Backend request failed' }));
+      throw new Error(errorBody.error || `Request failed with status ${res.status}`);
+    }
+
+    return res.json();
+  };
+
+  // Try primary URL first, then fallbacks if network-level failure occurs
+  try {
+    return await makeRequest(BACKEND_URL);
+  } catch (err) {
+    const isNetworkError = err instanceof TypeError || /Unable to reach backend|NetworkError|Failed to fetch/i.test(String(err));
+    if (!isNetworkError) throw err;
+
+    for (const fb of FALLBACK_URLS) {
+      try {
+        return await makeRequest(fb);
+      } catch (innerErr) {
+        // continue to next fallback
+        console.warn(`Backend fallback ${fb} failed:`, innerErr);
+      }
+    }
+
+    throw new Error('All backend endpoints are unreachable');
   }
-
-  return response.json();
 };
 
 export const parseTimestampToDate = (value: TimestampLike | null | undefined): Date | null => {
@@ -70,6 +92,10 @@ export const getOrCreateUserProfile = async (firebaseUser: {
   });
 };
 
+export const getAuditStats = async () => {
+  return backendRequest('/admin/audit-stats');
+};
+
 export type TimestampLike =
   | Timestamp
   | Date
@@ -95,7 +121,8 @@ export interface Transaction {
   recipient: string;
   category: string;
   timestamp: Timestamp;
-  flagged: boolean;
+  flagged?: boolean;
+  flagReason?: string;
 }
 
 export interface VirtualCard {
@@ -178,6 +205,25 @@ export const createTransaction = async (userId: string, data: Omit<Transaction, 
   };
 
   const docRef = await addDoc(collection(db, 'transactions'), txData);
+
+  // If the transaction was flagged or has a flagReason, write a summary audit log so store purchases are tracked.
+  if (data.flagged || data.flagReason) {
+    try {
+      await addDoc(collection(db, 'auditLogs'), {
+        userId,
+        transactionId: docRef.id,
+        outcome: !!data.flagged,
+        flagReasons: data.flagReason ? [data.flagReason] : [],
+        amount: data.amount,
+        recipient: data.recipient,
+        category: data.category,
+        source: 'store',
+        timestamp: serverTimestamp(),
+      });
+    } catch (e) {
+      console.error('Failed to write store audit log:', e);
+    }
+  }
   return docRef.id;
 };
 

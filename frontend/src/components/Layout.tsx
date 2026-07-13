@@ -12,6 +12,7 @@ import {
   ShoppingBag,
   Users, 
   ShieldAlert,
+  BarChart3,
   LogOut,
   Menu,
   X,
@@ -37,6 +38,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const adminLinks = [
     { href: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
+    { href: '/admin/governance', label: 'Governance', icon: BarChart3 },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/transactions', label: 'All Transactions', icon: ShieldAlert },
   ];

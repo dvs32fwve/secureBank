@@ -2,7 +2,11 @@ import React, { useState } from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export const FraudBanner: React.FC = () => {
+interface FraudBannerProps {
+  reason?: string | null;
+}
+
+export const FraudBanner: React.FC<FraudBannerProps> = ({ reason = null }) => {
   const [isVisible, setIsVisible] = useState(true);
 
   return (
@@ -19,7 +23,7 @@ export const FraudBanner: React.FC = () => {
             <div>
               <h4 className="text-destructive font-medium">Suspicious Activity Detected</h4>
               <p className="text-sm text-destructive/80 mt-1">
-                We've flagged a recent transaction on your account. Please review your recent activity.
+                {reason ? `This transaction was flagged: ${reason}. Please review your recent activity.` : "We've flagged a recent transaction on your account. Please review your recent activity."}
               </p>
             </div>
           </div>
