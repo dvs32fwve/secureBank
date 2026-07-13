@@ -1,4 +1,5 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { useEffect } from "react";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./pages/Login";
