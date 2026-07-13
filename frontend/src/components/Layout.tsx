@@ -9,6 +9,7 @@ import {
   List, 
   UserCircle, 
   CreditCard, 
+  ShoppingBag,
   Users, 
   ShieldAlert,
   LogOut,
@@ -30,10 +31,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     { href: '/transfer', label: 'Transfer', icon: ArrowLeftRight },
     { href: '/transactions', label: 'Transactions', icon: List },
     { href: '/card', label: 'Virtual Card', icon: CreditCard },
+    { href: '/store', label: 'Demo Store', icon: ShoppingBag },
     { href: '/profile', label: 'Profile', icon: UserCircle },
   ];
 
   const adminLinks = [
+    { href: '/admin/dashboard', label: 'Admin Dashboard', icon: LayoutDashboard },
     { href: '/admin/users', label: 'Users', icon: Users },
     { href: '/admin/transactions', label: 'All Transactions', icon: ShieldAlert },
   ];

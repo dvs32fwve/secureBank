@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react';
-import { useAuth } from '../context/AuthContext';
 import { getAllUsers, getAllTransactions, Transaction, User } from '../firebase/firestore';
 import { Layout } from '../components/Layout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { ShieldAlert, Users, TrendingUp, Wallet } from 'lucide-react';
+import { ShieldAlert, Users, TrendingUp } from 'lucide-react';
 import { format } from 'date-fns';
 
 const CHART_COLORS = [
@@ -27,15 +26,12 @@ function txTypeLabel(type: string) {
   return 'Transfer';
 }
 
-export default function Dashboard() {
-  const { user } = useAuth();
+export default function AdminDashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!user) return;
-
     setLoading(true);
     Promise.all([getAllUsers(), getAllTransactions()])
       .then(([loadedUsers, loadedTxs]) => {
@@ -46,7 +42,7 @@ export default function Dashboard() {
         console.error('Failed to load admin dashboard data:', error);
       })
       .finally(() => setLoading(false));
-  }, [user]);
+  }, []);
 
   const totalUsers = users.length;
   const totalTransactions = transactions.length;
@@ -85,8 +81,8 @@ export default function Dashboard() {
             <div className="flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3">
               <ShieldAlert className="h-5 w-5 text-primary" />
               <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Signed in as</p>
-                <p className="font-medium">{user?.name}</p>
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Admin panel</p>
+                <p className="font-medium">Overview</p>
               </div>
             </div>
           </motion.div>
@@ -211,7 +207,7 @@ export default function Dashboard() {
                         <p className="text-sm text-muted-foreground">{tx.timestamp ? format(tx.timestamp.toDate(), 'MMM d, yyyy') : 'Unknown date'}</p>
                       </div>
                       <div className="text-right">
-                        <p className={tx.flagged ? 'text-destructive font-semibold' : 'font-semibold'}>{tx.flagged ? '-' : ''}{formatCurrency(tx.amount)}</p>
+                        <p className={tx.flagged ? 'text-destructive font-semibold' : 'font-semibold'}>{formatCurrency(tx.amount)}</p>
                         <p className="text-xs text-muted-foreground">{tx.category}</p>
                       </div>
                     </div>

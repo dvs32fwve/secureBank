@@ -1,20 +1,20 @@
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
-import { useLocation } from "wouter";
-import { useAuth } from "./context/AuthContext";
-import { useEffect } from "react";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Features from "./pages/Features";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-import Dashboard from "./pages/Dashboard";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Balance from "./pages/Balance";
 import Transfer from "./pages/Transfer";
 import Transactions from "./pages/Transactions";
 import Profile from "./pages/Profile";
 import Card from "./pages/Card";
+import Store from "./pages/Store";
+import ApiDocs from "./pages/ApiDocs";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 import NotFound from "./pages/not-found";
@@ -38,12 +38,15 @@ function Router() {
       <Route path="/about" component={About} />
       <Route path="/contact" component={Contact} />
       <Route path="/login" component={Login} />
-      <Route path="/dashboard" component={Dashboard} />
+      <Route path="/dashboard" component={CustomerDashboard} />
+      <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/balance" component={Balance} />
       <Route path="/transfer" component={Transfer} />
       <Route path="/transactions" component={Transactions} />
       <Route path="/profile" component={Profile} />
       <Route path="/card" component={Card} />
+      <Route path="/store" component={Store} />
+      <Route path="/api-docs" component={ApiDocs} />
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/transactions" component={AdminTransactions} />
       <Route component={NotFound} />

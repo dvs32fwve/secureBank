@@ -1,53 +1,122 @@
 # SecureBank Backend
 
-Simple Node.js Express server for SecureBank application.
+The backend is a Node.js + Express server that powers SecureBank with Firebase authentication verification, user profile management, virtual card generation, and transfer processing.
 
-## Setup
+## Key Features
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or pnpm
+- Firebase token authentication using `firebase-admin`
+- Secure user profile creation and lookup
+- Virtual card generation, validation, repair, and status updates
+- Money transfer endpoint with sender/recipient balance updates and transaction records
+- In-memory TTL caching for user and virtual card reads
+- Health check endpoint for deployment readiness
 
-### Installation
+## Prerequisites
+
+- Node.js 14 or higher
+- npm
+
+## Installation
 
 ```bash
+cd backend
 npm install
 ```
 
-### Environment Variables
+## Environment Setup
 
-Create a `.env` file in the root directory with the following variables:
+Copy the example environment file and set the runtime variables:
 
+```bash
+cd backend
+cp .env.example .env
 ```
-PORT=5000
+
+Example `.env` values:
+
+```env
+PORT=5001
 NODE_ENV=development
 ```
 
+## Firebase Service Account
+
+The backend uses Firebase Admin SDK with a service account key file.
+
+- `serviceKey.example.json` is the example template
+- `serviceKey.json` should contain your Firebase service account credentials
+
 ## Running the Server
 
-### Development Mode (with auto-reload)
+### Development
+
 ```bash
+cd backend
 npm run dev
 ```
 
-### Production Mode
+### Production
+
 ```bash
+cd backend
 npm start
 ```
 
-The server will be available at `http://localhost:5000`
+The backend runs on `http://localhost:5001` by default.
 
 ## API Endpoints
 
-- `GET /` - Welcome message
-- `GET /health` - Health check endpoint
+### Public
+
+- `GET /` — Welcome response
+- `GET /health` — Health check
+
+### Protected (Bearer token required)
+
+- `POST /users` — Create or return the authenticated user profile
+- `GET /virtual-card` — Retrieve the current user virtual card
+- `POST /virtual-card/repair` — Repair or regenerate the user virtual card
+- `PATCH /virtual-card` — Update card status (`active` or `blocked`)
+- `POST /transfer` — Send money to another user by recipient email
+
+## Transfer Behavior
+
+- Validates the authenticated sender via Firebase token
+- Verifies the sender profile exists
+- Checks recipient email against Firestore users
+- Ensures sufficient sender balance
+- Applies flagged status for transfer amounts above $1000
+- Writes both sender and recipient transaction records in a Firestore batch
+
+## Data Model
+
+- `users` collection: stores `uid`, `name`, `email`, `photoURL`, `balance`, `role`, `createdAt`
+- `virtualCards` collection: stores `userId`, `cardNumber`, `cardNumberMasked`, `expiry`, `status`
+- `transactions` collection: stores `userId`, `type`, `amount`, `recipient`, `category`, `note`, `flagged`, `timestamp`
 
 ## Project Structure
 
 ```
 backend/
-├── server.js      # Main server file
-├── .env           # Environment variables
-├── package.json   # Project dependencies
-└── node_modules/  # Dependencies directory
+├── server.js
+├── package.json
+├── .env.example
+├── .env
+├── serviceKey.example.json
+├── serviceKey.json
+├── utils/
+│   └── cache.js
+└── tests/
+```
+
+## Health Check
+
+```bash
+curl http://localhost:5001/health
+```
+
+Expected response:
+
+```json
+{ "status": "OK", "timestamp": "..." }
 ```

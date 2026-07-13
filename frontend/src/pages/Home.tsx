@@ -140,7 +140,14 @@ export default function Home() {
               >
                 Contact
               </Button>
-              <Button onClick={() => setLocation(user ? '/dashboard' : '/login')}>
+              <Button
+                variant="ghost"
+                onClick={() => setLocation('/api-docs')}
+                className="hover:text-primary"
+              >
+                API Docs
+              </Button>
+              <Button onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}>
                 {user ? 'Dashboard' : 'Sign In'}
               </Button>
             </div>
@@ -187,7 +194,7 @@ export default function Home() {
             >
               <Button
                 size="lg"
-                onClick={() => setLocation(user ? '/dashboard' : '/login')}
+                onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}
                 className="text-base"
               >
                 {user ? 'Go to Dashboard' : 'Get Started'}

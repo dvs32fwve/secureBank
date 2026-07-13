@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { getIdToken } from 'firebase/auth';
 import { useAuth } from '../context/AuthContext';
-import { createTransaction } from '../firebase/firestore';
+import { auth } from '../firebase/config';
 import { Layout } from '../components/Layout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeftRight, AlertTriangle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
 
 const CATEGORIES = ['Food', 'Shopping', 'Travel', 'Entertainment', 'Utilities', 'Healthcare', 'Education', 'Other'];
 
@@ -14,7 +17,7 @@ function formatCurrency(n: number) {
 }
 
 export default function Transfer() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [step, setStep] = useState<'form' | 'confirm'>('form');
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ recipient: '', amount: '', category: 'Other', note: '' });
@@ -22,7 +25,8 @@ export default function Transfer() {
 
   const validate = () => {
     const e: Record<string, string> = {};
-    if (!form.recipient.trim()) e.recipient = 'Recipient is required';
+    if (!form.recipient.trim()) e.recipient = 'Recipient email is required';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.recipient.trim())) e.recipient = 'Enter a valid email address';
     const amt = parseFloat(form.amount);
     if (!form.amount || isNaN(amt) || amt <= 0) e.amount = 'Enter a valid amount';
     if (amt > (user?.balance ?? 0)) e.amount = 'Insufficient funds';
@@ -40,14 +44,28 @@ export default function Transfer() {
     setLoading(true);
     try {
       const amount = parseFloat(form.amount);
-      await createTransaction(user!.uid, {
-        type: 'transfer',
-        amount,
-        recipient: form.recipient,
-        category: form.category,
-        flagged: amount > 1000,
+      const token = await getIdToken(auth.currentUser!);
+      const response = await fetch(`${BACKEND_URL}/transfer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          recipientEmail: form.recipient.trim(),
+          amount,
+          category: form.category,
+          note: form.note,
+        }),
       });
-      toast.success('Transfer completed successfully');
+
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || 'Transfer failed');
+      }
+
+      await refreshUser();
+      toast.success(data.flagged ? 'Transfer completed and flagged for review' : 'Transfer completed successfully');
       setForm({ recipient: '', amount: '', category: 'Other', note: '' });
       setStep('form');
     } catch (err: unknown) {
@@ -76,12 +94,12 @@ export default function Transfer() {
                 {step === 'form' ? (
                   <motion.div key="form" initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }} className="space-y-5">
                     <div>
-                      <label className="text-sm font-medium text-foreground/80 block mb-1.5">Recipient Name</label>
+                      <label className="text-sm font-medium text-foreground/80 block mb-1.5">Recipient Email</label>
                       <input
                         data-testid="input-recipient"
                         value={form.recipient}
                         onChange={e => setForm(f => ({ ...f, recipient: e.target.value }))}
-                        placeholder="Enter recipient name"
+                        placeholder="Enter recipient email"
                         className="w-full bg-muted border border-input rounded-lg px-4 py-3 text-sm outline-none focus:border-primary transition-colors"
                       />
                       {errors.recipient && <p className="text-destructive text-xs mt-1">{errors.recipient}</p>}

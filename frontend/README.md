@@ -1,6 +1,6 @@
-# SecureBank AI
+# SecureBank AI Frontend
 
-A secure, modern banking application built with React, TypeScript, and Firebase. Features user authentication, transaction management, card operations, and admin controls.
+The frontend is a Vite-powered React + TypeScript application for SecureBank. It connects to Firebase for authentication and Firestore data, and it calls the backend for user profile and virtual card operations.
 
 ## Table of Contents
 
@@ -9,224 +9,211 @@ A secure, modern banking application built with React, TypeScript, and Firebase.
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Environment Setup](#environment-setup)
-- [Running the Project](#running-the-project)
+- [Running the App](#running-the-app)
+- [Frontend Routes](#frontend-routes)
 - [Project Structure](#project-structure)
-- [Firebase Setup](#firebase-setup)
-- [Firestore Rules](#firestore-rules)
+- [Key Components](#key-components)
+- [Firebase & Backend Integration](#firebase--backend-integration)
 - [Scripts](#scripts)
-- [Deployment](#deployment)
+- [Troubleshooting](#troubleshooting)
 
 ## Features
 
-- **Secure Authentication** - Firebase Auth with Google sign-in
-- **Animated Landing Pages** - Home, Features, About, and Contact pages with motion effects
-- **Unified Navigation** - Consistent site menu with `Dashboard` replacing `Sign In` for logged-in users
-- **Contact Form** - Sends submissions to Firestore `contact_form`
-- **User Profiles** - Manage account information and settings
-- **Card Management** - View and manage bank cards
-- **Balance Tracking** - Real-time account balance updates
-- **Transaction History** - Detailed transaction records with filters
-- **Fund Transfers** - Secure money transfers between accounts
-- **Admin Dashboard** - User management and transaction monitoring
-- **Modern UI** - Beautiful, responsive design with Tailwind CSS
-- **Notifications** - Toast notifications with Sonner
-- **Mobile Responsive** - Works seamlessly on all devices
+- Google sign-in authentication with Firebase Auth
+- Live dashboard with balance and recent transaction updates
+- Transaction history and secure transfer flow
+- Virtual card generation, repair, and status control
+- Demo store checkout using virtual card data
+- Admin pages for user and transaction review
+- Public API docs available at `/api-docs`
+- Responsive layout with modern UI and animations
+- Toast notifications for user feedback
+- Hidden menu path for API docs, accessible by URL only
 
 ## Tech Stack
 
-- **Frontend**: React 18, TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS, Radix UI
-- **State Management**: React Context API
-- **Backend**: Firebase (Auth, Firestore, Storage)
-- **Routing**: Wouter
-- **UI Components**: shadcn/ui
-- **Forms**: React Hook Form, Zod
-- **Charts**: Recharts
-- **Icons**: Lucide React
+- React 18
+- TypeScript
+- Vite
+- Tailwind CSS
+- Wouter
+- Firebase client SDK
+- Lucide React
+- Framer Motion
+- Sonner
+- React Hook Form
+- Zod
+- Recharts
 
 ## Prerequisites
 
-- Node.js 18+ (v22.13.1 recommended)
-- pnpm package manager
+- Node.js 18+
+- pnpm
 - Firebase project account
-- Git
 
 ## Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd securebank
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pnpm install
-   ```
+```bash
+cd frontend
+pnpm install
+```
 
 ## Environment Setup
 
-1. **Create a `.env` file** in the root directory:
-   ```bash
-   cp .env.example .env
-   ```
+Create a `.env` file from the example:
 
-2. **Add Firebase credentials** to `.env`:
-   ```
-   VITE_FIREBASE_API_KEY=API_KEY
-   VITE_FIREBASE_AUTH_DOMAIN=AUTH_DOMAIN
-   VITE_FIREBASE_PROJECT_ID=PROJECT_ID
-   VITE_FIREBASE_STORAGE_BUCKET=STORAGE_BUCKET
-   VITE_FIREBASE_MESSAGING_SENDER_ID=MESSAGING_SENDER_ID
-   VITE_FIREBASE_APP_ID=APP_ID
-   ```
-
-Get these values from the [Firebase Console](https://console.firebase.google.com/).
-
-## Running the Project
-
-### Development Server
 ```bash
-PORT=5173 BASE_PATH=/ pnpm run dev
+cd frontend
+cp .env.example .env
 ```
 
-The app will be available at `http://localhost:5173`
+Add the Firebase credentials and backend URL:
 
-### Build for Production
+```env
+VITE_BACKEND_URL=http://localhost:5001
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+```
+
+## Running the App
+
+### Development
+
+```bash
+pnpm run dev
+```
+
+Open `http://localhost:5173`.
+
+### Production Build
+
 ```bash
 pnpm run build
 ```
 
 ### Preview Production Build
+
 ```bash
 pnpm run serve
 ```
 
-### Type Check
+### Type Checking
+
 ```bash
 pnpm run typecheck
 ```
 
+## Frontend Routes
+
+- `/home` — public homepage
+- `/features` — features overview
+- `/about` — about page
+- `/contact` — contact page
+- `/login` — Google sign-in page
+- `/dashboard` — authenticated dashboard
+- `/balance` — account balance page
+- `/transfer` — send money flow
+- `/transactions` — transaction history
+- `/profile` — profile page
+- `/card` — virtual card page
+- `/store` — demo storefront
+- `/admin/users` — admin user management
+- `/admin/transactions` — admin transaction review
+- `/api-docs` — public backend API docs (hidden from sidebar)
+
 ## Project Structure
 
 ```
-src/
-├── components/          # Reusable components
-│   ├── ui/             # UI component library (Radix UI)
-│   ├── Layout.tsx      # Main layout wrapper
-│   ├── ProtectedRoute.tsx
-│   └── FraudBanner.tsx
-├── pages/              # Page components
-│   ├── Login.tsx
-│   ├── Dashboard.tsx
-│   ├── Balance.tsx
-│   ├── Transfer.tsx
-│   ├── Transactions.tsx
-│   ├── Profile.tsx
-│   ├── Card.tsx
-│   ├── admin/          # Admin pages
-│   │   ├── AdminUsers.tsx
-│   │   └── AdminTransactions.tsx
-│   └── not-found.tsx
-├── context/            # React Context
-│   └── AuthContext.tsx # Authentication state
-├── firebase/           # Firebase configuration
-│   ├── config.ts       # Firebase initialization
-│   ├── auth.ts         # Auth functions
-│   └── firestore.ts    # Firestore operations
-├── hooks/              # Custom hooks
-│   ├── use-mobile.tsx
-│   └── use-toast.ts
-├── lib/                # Utilities
-│   └── utils.ts
-├── App.tsx             # Main app component
-├── main.tsx            # Entry point
-└── index.css           # Global styles
+frontend/
+├── public/
+├── src/
+│   ├── components/
+│   │   ├── ui/                # UI library components
+│   │   ├── Avatar.tsx
+│   │   ├── FraudBanner.tsx
+│   │   ├── Layout.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   └── ...
+│   ├── context/
+│   │   └── AuthContext.tsx    # Auth state, Firestore sync, backend calls
+│   ├── firebase/
+│   │   ├── auth.ts            # Firebase auth helpers
+│   │   ├── config.ts          # Firebase initialization
+│   │   └── firestore.ts       # Firestore and backend API wrappers
+│   ├── hooks/
+│   │   ├── use-mobile.tsx
+│   │   └── use-toast.ts
+│   ├── lib/
+│   │   └── utils.ts
+│   ├── pages/
+│   │   ├── admin/
+│   │   │   ├── AdminUsers.tsx
+│   │   │   └── AdminTransactions.tsx
+│   │   ├── ApiDocs.tsx
+│   │   ├── Balance.tsx
+│   │   ├── Card.tsx
+│   │   ├── Contact.tsx
+│   │   ├── Dashboard.tsx
+│   │   ├── Features.tsx
+│   │   ├── Home.tsx
+│   │   ├── Login.tsx
+│   │   ├── Profile.tsx
+│   │   ├── Store.tsx
+│   │   ├── Transfer.tsx
+│   │   ├── Transactions.tsx
+│   │   └── not-found.tsx
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
-## Firebase Setup
+## Key Components
 
-### 1. Create Firebase Project
-- Go to [Firebase Console](https://console.firebase.google.com/)
-- Create a new project
-- Enable Google Sign-In in Authentication
+- `AuthContext.tsx` — keeps auth state, syncs the Firestore user doc, and ensures virtual card data
+- `ProtectedRoute.tsx` — guards authenticated pages
+- `Layout.tsx` — app shell and menu layout
+- `ApiDocs.tsx` — hidden backend API docs page
+- `Store.tsx` — demo purchase experience
+- `Transfer.tsx` — transfer flow with backend API
+- `Dashboard.tsx` — live balance and transaction view
 
-### 2. Initialize Firestore
-- Enable Cloud Firestore database
-- Start in test mode initially, then secure with rules
+## Firebase & Backend Integration
 
-### 3. Create Composite Index
-The app uses a composite index for transaction queries:
-- Collection: `transactions`
-- Fields: `userId` (Ascending), `timestamp` (Descending)
+- Uses Firebase Auth to sign in with Google
+- Sends `Authorization: Bearer <token>` to backend endpoints
+- Stores user records in Firestore `users`
+- Stores transactions in Firestore `transactions`
+- Saves contact submissions in Firestore `contact_form`
 
-A prompt appears to create this index when transactions are first queried.
+## Notes
 
-
+- `/api-docs` is accessible by direct URL but hidden from the sidebar menu
+- Transfers larger than $1000 are flagged by the backend
+- Virtual cards are generated automatically when a user logs in
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `pnpm run dev` | Start development server |
-| `pnpm run build` | Build for production |
+| `pnpm run dev` | Start the frontend dev server |
+| `pnpm run build` | Build production assets |
 | `pnpm run serve` | Preview production build |
-| `pnpm run typecheck` | Run TypeScript type checking |
-
-## Deployment
-
-### Deploy to other platforms
-The `dist/` folder contains the production build and can be deployed to:
-- Vercel
-- Netlify
-- GitHub Pages
-- Any static hosting service
-
-## Key Features Explained
-
-### Authentication
-- Users sign in with Google OAuth
-- Session persisted with Firebase Auth
-- Protected routes check authentication state
-
-### Transactions
-- Stored in Firestore with timestamps
-- Indexed for fast queries by user
-- Support for multiple transaction types
-
-### Admin Features
-- Admin dashboard at `/admin/users`
-- View all users and transactions
-- Role-based access control
-
-### UI/UX
-- Responsive design for mobile and desktop
-- Toast notifications for user feedback
-- Loading states and error handling
-- Accessible components from Radix UI
+| `pnpm run typecheck` | Run TypeScript checks |
 
 ## Troubleshooting
 
-**Firebase Invalid API Key Error**
-- Ensure Firebase credentials are correct in `.env`
-- Regenerate credentials in Firebase Console if needed
-
-**Firestore Index Required**
-- Create the composite index as shown in Firebase Console
-- Index creation usually takes a few minutes
-
-**Port Already in Use**
-- Change `PORT` environment variable: `PORT=3000 pnpm run dev`
-
-**Build Errors**
-- Clear cache: `rm -rf node_modules pnpm-lock.yaml && pnpm install`
-- Check Node version: `node --version`
-
-## License
-
-MIT License - see LICENSE file for details
+- Ensure `VITE_BACKEND_URL` is correct and the backend is running
+- Check Firebase credentials in `.env`
+- Verify Google sign-in is enabled in Firebase Auth
+- If Firestore queries fail, confirm rules and indexes are configured
 
 ## Support
 
-For issues or questions, please refer to the [Firebase Documentation](https://firebase.google.com/docs) or check the project's issue tracker.
+Review browser console logs and backend API responses for errors. Use the backend health endpoint to confirm connectivity.

@@ -17,7 +17,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
       if (!user) {
         setLocation('/login');
       } else if (requireAdmin && user.role !== 'admin') {
-        setLocation('/dashboard');
+        setLocation('/home');
       }
     }
   }, [user, loading, requireAdmin, setLocation]);

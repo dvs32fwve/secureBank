@@ -139,7 +139,7 @@ export default function Contact() {
               >
                 About
               </Button>
-              <Button onClick={() => setLocation(user ? '/dashboard' : '/login')}>
+              <Button onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}>
                 {user ? 'Dashboard' : 'Sign In'}
               </Button>
             </div>
