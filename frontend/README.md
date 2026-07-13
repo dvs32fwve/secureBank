@@ -20,6 +20,7 @@ The frontend is a Vite-powered React + TypeScript application for SecureBank. It
 ## Features
 
 - Google sign-in authentication with Firebase Auth
+- Separate customer `/dashboard` and admin `/admin/dashboard` experiences
 - Live dashboard with balance and recent transaction updates
 - Transaction history and secure transfer flow
 - Virtual card generation, repair, and status control
@@ -114,7 +115,8 @@ pnpm run typecheck
 - `/about` — about page
 - `/contact` — contact page
 - `/login` — Google sign-in page
-- `/dashboard` — authenticated dashboard
+- `/dashboard` — customer dashboard
+- `/admin/dashboard` — admin dashboard
 - `/balance` — account balance page
 - `/transfer` — send money flow
 - `/transactions` — transaction history

@@ -13,7 +13,7 @@ The backend is a Node.js + Express server that powers SecureBank with Firebase a
 
 ## Prerequisites
 
-- Node.js 14 or higher
+- Node.js 18 or higher
 - npm
 
 ## Installation
@@ -45,6 +45,7 @@ The backend uses Firebase Admin SDK with a service account key file.
 
 - `serviceKey.example.json` is the example template
 - `serviceKey.json` should contain your Firebase service account credentials
+- The server uses this file to verify Firebase tokens and read/write Firestore data
 
 ## Running the Server
 

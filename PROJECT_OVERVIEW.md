@@ -7,7 +7,7 @@ SecureBank is a full-stack demo banking application built with React, TypeScript
 The project is split into two main packages:
 
 - `backend/` — Express server that verifies Firebase tokens, manages user profiles, generates virtual cards, and processes transfers.
-- `frontend/` — React + Vite application for users to sign in, manage accounts, track balances, and perform transfers.
+- `frontend/` — React + Vite application for customers and admins, including role-based dashboards and a hidden `/api-docs` page.
 
 ## Features
 
@@ -19,12 +19,14 @@ The project is split into two main packages:
 - Secure transfer flow with sender/recipient balance updates
 - Transfer flagging for high-value transactions (> $1000)
 - Admin views for user and transaction monitoring
-- Public API documentation page at `/api-docs`
+- Separate customer and admin dashboards
+- Public API documentation page at `/api-docs`, hidden from the main sidebar menu
 
 ### Frontend Experience
 
 - Modern responsive UI with Tailwind and Framer Motion
 - Protected authenticated routes with `ProtectedRoute`
+- Role-aware redirects and separate dashboards for customers and admins
 - Live Firestore profile sync via `AuthContext`
 - Demo store experience using virtual card checkout
 - Real-time dashboard updates for balance and transactions
