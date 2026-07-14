@@ -116,12 +116,13 @@ export default function StorePage() {
       if (selectedProduct.price > FRAUD_THRESHOLD) reasons.push('high_value');
       if (selectedProduct.category.toLowerCase() === 'gift cards' && selectedProduct.price > 500) reasons.push('high_risk_category');
 
+      const isFlagged = reasons.length > 0;
       await createTransaction(user.uid, {
         type: 'withdrawal',
         amount: selectedProduct.price,
         recipient: `${selectedProduct.name} via SecureBank VCC`,
         category: selectedProduct.category,
-        flagged: reasons.length > 0,
+        flagged: isFlagged,
         flagReason: reasons.join('; '),
       });
 

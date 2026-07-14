@@ -20,7 +20,7 @@ The project is split into two main packages:
 - Transfer flagging for high-value transactions (> $1000)
 - Admin views for user and transaction monitoring
 - Separate customer and admin dashboards
-- Public API documentation page at `/api-docs`, hidden from the main sidebar menu
+- Public API documentation page at `/api-docs`, hidden from the main sidebar menu and accessible only by direct URL
 
 ### Frontend Experience
 
@@ -168,6 +168,7 @@ VITE_FIREBASE_APP_ID=...
 - The backend uses in-memory caching for user and virtual card reads to reduce repeated Firestore queries.
 - Transfers are performed with Firestore batch writes to ensure both sender and recipient balances update together.
 - The API docs page is intentionally hidden from the sidebar menu but still accessible directly.
+- Frontend API requests now normalize `VITE_BACKEND_URL` and remove extra slashes automatically.
 
 ## Useful Commands
 

@@ -16,6 +16,7 @@ The frontend is a Vite-powered React + TypeScript application for SecureBank. It
 - [Firebase & Backend Integration](#firebase--backend-integration)
 - [Scripts](#scripts)
 - [Troubleshooting](#troubleshooting)
+- [User Manual](../USER_MANUAL.md)
 
 ## Features
 
@@ -26,10 +27,11 @@ The frontend is a Vite-powered React + TypeScript application for SecureBank. It
 - Virtual card generation, repair, and status control
 - Demo store checkout using virtual card data
 - Admin pages for user and transaction review
-- Public API docs available at `/api-docs`
+- AI fraud detection rules and transaction flagging for large transfers
+- Hidden API documentation route accessible by direct URL only
 - Responsive layout with modern UI and animations
 - Toast notifications for user feedback
-- Hidden menu path for API docs, accessible by URL only
+- Production backend URL normalization to avoid extra path slashes
 
 ## Tech Stack
 
@@ -80,6 +82,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
 
+For production, set:
+
+```env
+VITE_BACKEND_URL=https://securebankbackend-thbc.onrender.com
+```
+
+The frontend now trims extra trailing slashes automatically, so both `https://securebankbackend-thbc.onrender.com` and `https://securebankbackend-thbc.onrender.com/` work.
+
 ## Running the App
 
 ### Development
@@ -125,7 +135,7 @@ pnpm run typecheck
 - `/store` — demo storefront
 - `/admin/users` — admin user management
 - `/admin/transactions` — admin transaction review
-- `/api-docs` — public backend API docs (hidden from sidebar)
+- `/api-docs` — public backend API docs (hidden from sidebar, direct access only)
 
 ## Project Structure
 

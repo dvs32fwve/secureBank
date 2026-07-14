@@ -35,6 +35,14 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
 
+For production deployment, use:
+
+```env
+VITE_BACKEND_URL=https://securebankbackend-thbc.onrender.com
+```
+
+The frontend code normalizes backend URLs and removes redundant slashes when building API request paths.
+
 ## Run in development mode
 
 ```bash

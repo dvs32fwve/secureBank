@@ -7,7 +7,8 @@ The backend is a Node.js + Express server that powers SecureBank with Firebase a
 - Firebase token authentication using `firebase-admin`
 - Secure user profile creation and lookup
 - Virtual card generation, validation, repair, and status updates
-- Money transfer endpoint with sender/recipient balance updates and transaction records
+- Money transfer endpoint with sender/recipient balance updates, transaction records, and fraud flagging
+- Firestore batch writes to keep transfers consistent
 - In-memory TTL caching for user and virtual card reads
 - Health check endpoint for deployment readiness
 
