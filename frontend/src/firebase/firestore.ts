@@ -6,6 +6,12 @@ const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001'
 const DEFAULT_FALLBACKS = ['https://securebankbackend-thbc.onrender.com'];
 const FALLBACK_URLS = (import.meta.env.VITE_BACKEND_FALLBACKS || DEFAULT_FALLBACKS.join(',')).split(',').map(s => s.trim()).filter(Boolean);
 
+const buildUrl = (baseUrl: string, path: string) => {
+  const base = baseUrl.replace(/\/+$/, '');
+  const suffix = path.replace(/^\/+/, '');
+  return `${base}/${suffix}`;
+};
+
 const getAuthToken = async () => {
   const currentUser = auth.currentUser;
   if (!currentUser) {
@@ -18,7 +24,7 @@ const backendRequest = async (path: string, options: RequestInit = {}) => {
   const token = await getAuthToken();
 
   const makeRequest = async (baseUrl: string) => {
-    const res = await fetch(`${baseUrl}${path}`, {
+    const res = await fetch(buildUrl(baseUrl, path), {
       ...options,
       headers: {
         'Content-Type': 'application/json',

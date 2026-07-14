@@ -10,6 +10,12 @@ import { toast } from 'sonner';
 
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001').replace(/\/+$/, '');
 
+const buildUrl = (baseUrl: string, path: string) => {
+  const base = baseUrl.replace(/\/+$/, '');
+  const suffix = path.replace(/^\/+/, '');
+  return `${base}/${suffix}`;
+};
+
 const CATEGORIES = ['Food', 'Shopping', 'Travel', 'Entertainment', 'Utilities', 'Healthcare', 'Education', 'Other'];
 
 function formatCurrency(n: number) {
@@ -45,7 +51,7 @@ export default function Transfer() {
     try {
       const amount = parseFloat(form.amount);
       const token = await getIdToken(auth.currentUser!);
-      const response = await fetch(`${BACKEND_URL}/transfer`, {
+      const response = await fetch(buildUrl(BACKEND_URL, '/transfer'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
