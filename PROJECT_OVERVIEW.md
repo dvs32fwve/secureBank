@@ -125,6 +125,18 @@ pnpm run dev
 
 Default app URL: `http://localhost:5173`
 
+## Production Deployment
+
+The project is deployed on Render:
+
+- Backend: `https://securebankbackend-thbc.onrender.com`
+  - Service ID: `srv-d9ahlua8qa3s73aqh200`
+  - Repo: [dvs32fwve/secureBankmain](https://github.com/dvs32fwve/secureBank/tree/main)
+
+- Frontend: `https://securebank-6may.onrender.com`
+  - Service ID: `srv-d93rtbvlk1mc739tlou0`
+  - Repo: [dvs32fwve/secureBankmain](https://github.com/dvs32fwve/secureBank/tree/main)
+
 ## Environment Setup
 
 ### Backend
