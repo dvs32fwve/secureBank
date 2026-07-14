@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeftRight, AlertTriangle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001';
+const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001').replace(/\/+$/, '');
 
 const CATEGORIES = ['Food', 'Shopping', 'Travel', 'Entertainment', 'Utilities', 'Healthcare', 'Education', 'Other'];
 
