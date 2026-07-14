@@ -253,14 +253,26 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
 
     // Rule: Same recipient twice within 10 minutes
     const tenMinutesMs = 10 * 60 * 1000;
-    const recentSince = admin.firestore.Timestamp.fromMillis(Date.now() - tenMinutesMs);
-    const recentQuery = await db.collection('transactions')
+    const recentSince = Date.now() - tenMinutesMs;
+    const recentTxSnap = await db.collection('transactions')
       .where('userId', '==', senderId)
-      .where('recipient', '==', normalizedRecipientEmail)
-      .where('type', '==', 'transfer')
-      .where('timestamp', '>=', recentSince)
       .get();
-    const recentCount = recentQuery.size;
+
+    const recentCount = recentTxSnap.docs.filter((doc) => {
+      const t = doc.data();
+      const txTimestamp = t?.timestamp;
+      const txTime = txTimestamp && typeof txTimestamp.toDate === 'function'
+        ? txTimestamp.toDate().getTime()
+        : null;
+
+      return (
+        t?.type === 'transfer' &&
+        t?.recipient === normalizedRecipientEmail &&
+        txTime !== null &&
+        txTime >= recentSince
+      );
+    }).length;
+
     const rapidRepeatOutcome = recentCount >= 1;
     ruleResults.push({ rule: 'rapid_repeat_recipient', threshold: '10m', outcome: rapidRepeatOutcome, details: { recentCount } });
 
