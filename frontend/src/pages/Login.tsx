@@ -52,7 +52,7 @@ export default function Login() {
             <div className="bg-primary/20 p-3 rounded-xl">
               <Banknote className="h-8 w-8 text-primary" />
             </div>
-            <span className="text-2xl font-bold tracking-tight">SecureBank AI</span>
+            <span className="text-2xl font-bold tracking-tight">SmartBank</span>
           </div>
 
           <h1 className="text-5xl font-bold leading-tight mb-6">
@@ -102,7 +102,7 @@ export default function Login() {
             <div className="bg-primary/20 p-2 rounded-lg">
               <Banknote className="h-6 w-6 text-primary" />
             </div>
-            <span className="text-xl font-bold">SecureBank AI</span>
+            <span className="text-xl font-bold">SmartBank</span>
           </div>
 
           <div className="bg-card border border-border rounded-2xl p-8 shadow-2xl">

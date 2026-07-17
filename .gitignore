@@ -1,4 +1,4 @@
-# Root .gitignore for the SecureBank monorepo
+# Root .gitignore for the SmartBank monorepo
 
 # Node dependencies
 node_modules/

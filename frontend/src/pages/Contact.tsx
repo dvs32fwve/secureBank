@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { LandingHeader } from '../components/LandingHeader';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -59,8 +60,8 @@ export default function Contact() {
     {
       icon: Mail,
       title: 'Email',
-      value: 'support@securebank.com',
-      link: 'mailto:support@securebank.com',
+      value: 'support@smartbank.com',
+      link: 'mailto:support@smartbank.com',
     },
     {
       icon: Phone,
@@ -98,54 +99,7 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
-      {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <motion.button
-              onClick={() => setLocation('/home')}
-              className="flex items-center gap-3 hover:opacity-80 transition"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="bg-primary/20 p-2 rounded-lg">
-                <Banknote className="h-6 w-6 text-primary" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">SecureBank AI</span>
-            </motion.button>
-
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/home')}
-                className="hover:text-primary"
-              >
-                Home
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/features')}
-                className="hover:text-primary"
-              >
-                Features
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/about')}
-                className="hover:text-primary"
-              >
-                About
-              </Button>
-              <Button onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}>
-                {user ? 'Dashboard' : 'Sign In'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      <LandingHeader />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
@@ -339,7 +293,7 @@ export default function Contact() {
               Ready to get started?
             </h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Join SecureBank today and experience secure, intelligent banking
+              Join SmartBank today and experience secure, intelligent banking
             </p>
             <Button
               size="lg"
@@ -363,10 +317,10 @@ export default function Contact() {
               whileHover={{ scale: 1.05 }}
             >
               <Banknote className="h-6 w-6 text-primary" />
-              <span className="font-bold">SecureBank AI</span>
+              <span className="font-bold">SmartBank</span>
             </motion.button>
             <p className="text-sm text-muted-foreground">
-              © 2024 SecureBank AI. All rights reserved.
+              © 2024 SmartBank. All rights reserved.
             </p>
             <div className="flex gap-6">
               <button

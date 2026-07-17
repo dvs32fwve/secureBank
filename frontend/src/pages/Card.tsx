@@ -71,7 +71,7 @@ export default function Card() {
 
                   <div className="relative flex justify-between items-start mb-10">
                     <div>
-                      <p className="text-white/60 text-xs uppercase tracking-widest">SecureBank AI</p>
+                      <p className="text-white/60 text-xs uppercase tracking-widest">SmartBank</p>
                       <p className="text-white font-bold text-lg mt-0.5">Virtual Card</p>
                     </div>
                     <Wifi className="h-6 w-6 text-white/60 rotate-90" />

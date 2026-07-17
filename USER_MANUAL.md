@@ -1,13 +1,13 @@
-# SecureBank User Manual
+# SmartBank User Manual
 
-This user manual explains how to use the SecureBank application from the customer and admin perspectives. It covers the main features, navigation, and behavior in local and production environments.
+This user manual explains how to use the SmartBank application from the customer and admin perspectives. It covers the main features, navigation, and behavior in local and production environments.
 
 ## Getting Started
 
 ### Access the App
 
-- **Frontend URL (production)**: `https://securebank-6may.onrender.com`
-- **Backend URL (production)**: `https://securebankbackend-thbc.onrender.com`
+- **Frontend URL (production)**: `https://smartbank-6may.onrender.com`
+- **Backend URL (production)**: `https://smartbankbackend-thbc.onrender.com`
 - **Local development**:
   - Frontend: `http://localhost:5173`
   - Backend: `http://localhost:5001`
@@ -24,6 +24,7 @@ This user manual explains how to use the SecureBank application from the custome
 ### Home Page
 
 - Visit `/home` for the landing page.
+- The homepage now highlights CAIGA governance and transparent fraud detection up front.
 - Use the top navigation to access `Features`, `About`, `Contact`, or `Sign In`.
 
 ### Dashboard
@@ -44,7 +45,7 @@ This user manual explains how to use the SecureBank application from the custome
   - Amount
   - Category
   - Optional note
-- Transfers above $1,000 are flagged for review, and you will see a warning before you confirm.
+- Transfers above $1,000 are flagged by CAIGA-style rule checks, and you will see a plain-language reason before you confirm.
 - The backend validates that the recipient exists and that you have sufficient funds.
 
 ### Virtual Card
@@ -100,12 +101,12 @@ This user manual explains how to use the SecureBank application from the custome
 ### Backend URL Behavior
 
 - In production, the app uses `VITE_BACKEND_URL` to target the backend.
-- The frontend now automatically strips extra trailing slashes, so `https://securebankbackend-thbc.onrender.com/` and `https://securebankbackend-thbc.onrender.com` both work.
+- The frontend now automatically strips extra trailing slashes, so `https://smartbankbackend-thbc.onrender.com/` and `https://smartbankbackend-thbc.onrender.com` both work.
 
 ### Known Deployment Hosts
 
-- Frontend: `https://securebank-6may.onrender.com`
-- Backend: `https://securebankbackend-thbc.onrender.com`
+- Frontend: `https://smartbank-6may.onrender.com`
+- Backend: `https://smartbankbackend-thbc.onrender.com`
 
 ## Troubleshooting
 

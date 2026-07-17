@@ -56,7 +56,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         <div className="bg-primary/10 p-2 rounded-lg">
           <Banknote className="h-6 w-6 text-primary" />
         </div>
-        <span className="font-bold text-xl tracking-tight">SecureBank AI</span>
+        <span className="font-bold text-xl tracking-tight">SmartBank</span>
       </div>
 
       <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
@@ -110,7 +110,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-sidebar border-b border-sidebar-border z-30 flex items-center justify-between px-4">
         <div className="flex items-center gap-2">
           <Banknote className="h-6 w-6 text-primary" />
-          <span className="font-bold text-lg">SecureBank AI</span>
+          <span className="font-bold text-lg">SmartBank</span>
         </div>
         <button onClick={() => setSidebarOpen(true)} className="p-2 text-sidebar-foreground">
           <Menu className="h-6 w-6" />

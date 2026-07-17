@@ -19,6 +19,14 @@ import ApiDocs from "./pages/ApiDocs";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminTransactions from "./pages/admin/AdminTransactions";
 import AdminGovernance from "./pages/admin/AdminGovernance";
+import NetworkBanking from "./pages/details/NetworkBanking";
+import FraudDetection from "./pages/details/FraudDetection";
+import SpendingInsights from "./pages/details/SpendingInsights";
+import SecurityPrivacy from "./pages/details/SecurityPrivacy";
+import Transparency from "./pages/details/Transparency";
+import Accountability from "./pages/details/Accountability";
+import Monitoring from "./pages/details/Monitoring";
+import CaigaFramework from "./pages/details/CaigaFramework";
 import NotFound from "./pages/not-found";
 
 function RootRedirect() {
@@ -49,6 +57,14 @@ function Router() {
       <Route path="/card" component={Card} />
       <Route path="/store" component={Store} />
       <Route path="/api-docs" component={ApiDocs} />
+      <Route path="/network-banking" component={NetworkBanking} />
+      <Route path="/fraud-detection" component={FraudDetection} />
+      <Route path="/spending-insights" component={SpendingInsights} />
+      <Route path="/security-privacy" component={SecurityPrivacy} />
+      <Route path="/transparency" component={Transparency} />
+      <Route path="/accountability" component={Accountability} />
+      <Route path="/monitoring" component={Monitoring} />
+      <Route path="/caiga-framework" component={CaigaFramework} />
       <Route path="/admin/users" component={AdminUsers} />
       <Route path="/admin/transactions" component={AdminTransactions} />
       <Route path="/admin/governance" component={AdminGovernance} />

@@ -4,6 +4,7 @@ const cors = require('cors');
 const admin = require('firebase-admin');
 const serviceAccount = require('./serviceKey.json');
 const { createCache } = require('./utils/cache');
+const { evaluateTransferRisk } = require('./utils/transferRules');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -96,7 +97,7 @@ const repairVirtualCardForUser = async (userId) => {
 };
 
 // Middleware
-const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000,https://securebank-6may.onrender.com').split(',').map(s => s.trim());
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost:3000,https://smartbank-6may.onrender.com').split(',').map(s => s.trim());
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (e.g., server-to-server, mobile, or curl)
@@ -110,7 +111,7 @@ app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({ message: 'SecureBank Backend Server' });
+  res.json({ message: 'SmartBank Backend Server' });
 });
 
 app.get('/health', (req, res) => {
@@ -243,49 +244,17 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
     const recipientId = recipientDoc.id;
     const recipientData = recipientDoc.data();
 
-    // Evaluate fraud rules and collect audit records
-    const ruleResults = [];
+    // Evaluate outbound transfer rules and collect audit records
+    const transferRisk = evaluateTransferRisk({
+      amount: parsedAmount,
+      category,
+      isIncoming: false,
+    });
 
-    // Rule: High value transfer over $1000
-    const highValueThreshold = 1000;
-    const highValueOutcome = parsedAmount > highValueThreshold;
-    ruleResults.push({ rule: 'high_value', threshold: highValueThreshold, outcome: highValueOutcome, details: { amount: parsedAmount } });
-
-    // Rule: Same recipient twice within 10 minutes
-    const tenMinutesMs = 10 * 60 * 1000;
-    const recentSince = Date.now() - tenMinutesMs;
-    const recentTxSnap = await db.collection('transactions')
-      .where('userId', '==', senderId)
-      .get();
-
-    const recentCount = recentTxSnap.docs.filter((doc) => {
-      const t = doc.data();
-      const txTimestamp = t?.timestamp;
-      const txTime = txTimestamp && typeof txTimestamp.toDate === 'function'
-        ? txTimestamp.toDate().getTime()
-        : null;
-
-      return (
-        t?.type === 'transfer' &&
-        t?.recipient === normalizedRecipientEmail &&
-        txTime !== null &&
-        txTime >= recentSince
-      );
-    }).length;
-
-    const rapidRepeatOutcome = recentCount >= 1;
-    ruleResults.push({ rule: 'rapid_repeat_recipient', threshold: '10m', outcome: rapidRepeatOutcome, details: { recentCount } });
-
-    // Rule: High-risk category (Gift Cards) and amount over $500
-    const highRiskCategory = 'gift cards';
-    const highRiskThreshold = 500;
-    const categoryLower = (category || '').toString().toLowerCase();
-    const highRiskOutcome = categoryLower === highRiskCategory && parsedAmount > highRiskThreshold;
-    ruleResults.push({ rule: 'high_risk_category', threshold: highRiskThreshold, outcome: highRiskOutcome, details: { category, amount: parsedAmount } });
-
-    const flagged = ruleResults.some(r => r.outcome === true);
-    const flagReasons = ruleResults.filter(r => r.outcome).map(r => r.rule);
-    const flagReasonText = flagReasons.length ? flagReasons.join('; ') : '';
+    const ruleResults = transferRisk.ruleResults;
+    const flagged = transferRisk.flagged;
+    const flagReasonText = transferRisk.flagReason;
+    const flagReasons = flagged ? [flagReasonText] : [];
 
     // Batch write: balances, transactions, and audit logs
     const batch = db.batch();
@@ -314,8 +283,8 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
       recipient: senderData?.email || normalizedRecipientEmail,
       category: category || 'Transfer',
       note: note ? `Received from ${normalizedRecipientEmail}` : `Received from ${normalizedRecipientEmail}`,
-      flagged,
-      flagReason: flagReasonText,
+      flagged: false,
+      flagReason: '',
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
 

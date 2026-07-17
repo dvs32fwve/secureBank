@@ -3,7 +3,7 @@ import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, query, whe
 import { getIdToken } from 'firebase/auth';
 
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001').replace(/\/+$/, '');
-const DEFAULT_FALLBACKS = ['https://securebankbackend-thbc.onrender.com'];
+const DEFAULT_FALLBACKS = ['https://smartbankbackend-thbc.onrender.com'];
 const FALLBACK_URLS = (import.meta.env.VITE_BACKEND_FALLBACKS || DEFAULT_FALLBACKS.join(',')).split(',').map(s => s.trim()).filter(Boolean);
 
 const buildUrl = (baseUrl: string, path: string) => {

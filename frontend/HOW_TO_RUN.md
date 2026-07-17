@@ -1,6 +1,6 @@
 # Frontend How to Run
 
-This frontend is a Vite-powered React application that connects to Firebase and the SecureBank backend.
+This frontend is a Vite-powered React application that connects to Firebase and the SmartBank backend. It now surfaces CAIGA governance and rule-based fraud decisioning in the homepage and feature pages.
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ VITE_FIREBASE_APP_ID=your_app_id
 For production deployment, use:
 
 ```env
-VITE_BACKEND_URL=https://securebankbackend-thbc.onrender.com
+VITE_BACKEND_URL=https://smartbankbackend-thbc.onrender.com
 ```
 
 The frontend code normalizes backend URLs and removes redundant slashes when building API request paths.

@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, onSnapshot } from 'firebase/firestore';
+import { useLocation } from 'wouter';
 import { auth, db } from '../firebase/config';
-import { getUser, getOrCreateUserProfile, ensureVirtualCard, User } from '../firebase/firestore';
+import { getOrCreateUserProfile, ensureVirtualCard, getUser, User } from '../firebase/firestore';
 import { Loader2 } from 'lucide-react';
 
 interface AuthContextType {
@@ -16,6 +17,8 @@ const AuthContext = createContext<AuthContextType>({ user: null, loading: true, 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasHydrated, setHasHydrated] = useState(false);
+  const [location] = useLocation();
 
   const refreshUser = async () => {
     if (!auth.currentUser) return;
@@ -26,8 +29,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    const publicPaths = ['/home', '/features', '/about', '/contact', '/api-docs', '/network-banking', '/fraud-detection', '/spending-insights', '/security-privacy', '/transparency', '/accountability', '/monitoring', '/caiga-framework'];
+    const isPublic = publicPaths.includes(location);
+
     const unsubscribeAuth = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
+        if (isPublic) {
+          const localUser: User = {
+            uid: firebaseUser.uid,
+            name: firebaseUser.displayName || 'Unknown User',
+            email: firebaseUser.email || '',
+            photoURL: firebaseUser.photoURL || '',
+            balance: 5000,
+            role: 'customer',
+            createdAt: new Date(),
+          };
+          setUser(localUser);
+          setLoading(false);
+          return;
+        }
+
         try {
           const existingUser = await getUser(firebaseUser.uid);
           if (existingUser) {
@@ -81,7 +102,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => unsubscribeAuth();
-  }, []);
+  }, [location]);
 
   if (loading) {
     return (

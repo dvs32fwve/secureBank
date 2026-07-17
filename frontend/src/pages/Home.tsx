@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
+import { LandingHeader } from '../components/LandingHeader';
 import {
   Banknote,
   ShieldCheck,
@@ -13,6 +14,10 @@ import {
   Lock,
   Smartphone,
   Globe,
+  Monitor,
+  ClipboardCheck,
+  Eye,
+  Sparkles,
 } from 'lucide-react';
 
 export default function Home() {
@@ -56,43 +61,61 @@ export default function Home() {
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR1UxuNWV9OJ5whAa1wii3QEiEmhlQLRs32rKQqYK2Mm3gvH3U0wvsHnH8&s=10',
   ];
 
-  const features = [
+  const tiles = [
+    {
+      icon: Globe,
+      title: 'Network Banking',
+      description: 'Connected accounts, payments, and global access.',
+      route: '/network-banking',
+    },
     {
       icon: ShieldCheck,
-      title: 'AI Fraud Detection',
-      description: 'Real-time transaction monitoring with machine learning',
+      title: 'Fraud Detection',
+      description: 'Real-time threat monitoring and intelligent alerts.',
+      route: '/fraud-detection',
     },
     {
-      icon: Zap,
-      title: 'Instant Transfers',
-      description: 'Move money to anyone in seconds',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Smart Analytics',
-      description: 'Spending insights and financial trends',
+      icon: BarChart3,
+      title: 'Spending Insights',
+      description: 'Visualize spending habits and savings opportunities.',
+      route: '/spending-insights',
     },
     {
       icon: Lock,
-      title: 'Bank-Grade Security',
-      description: 'End-to-end encryption and multi-factor authentication',
+      title: 'Security & Privacy',
+      description: 'Protect your data with bank-grade security.',
+      route: '/security-privacy',
     },
     {
-      icon: Smartphone,
-      title: 'Mobile First',
-      description: 'Full-featured app works seamlessly on all devices',
+      icon: Eye,
+      title: 'Transparency',
+      description: 'Clear transaction visibility and audit-ready records.',
+      route: '/transparency',
     },
     {
-      icon: Globe,
-      title: 'Global Access',
-      description: 'Manage your finances from anywhere in the world',
+      icon: ClipboardCheck,
+      title: 'Accountability',
+      description: 'Traceable actions and ownership for every event.',
+      route: '/accountability',
+    },
+    {
+      icon: Monitor,
+      title: 'Monitoring',
+      description: 'Continuous platform and activity monitoring.',
+      route: '/monitoring',
+    },
+    {
+      icon: Sparkles,
+      title: 'CAIGA Framework',
+      description: 'Governance, accountability, and intelligence in one model.',
+      route: '/caiga-framework',
     },
   ];
 
   const benefits = [
     'Secure authentication with Google OAuth',
     'Real-time balance and transaction updates',
-    'Advanced fraud detection algorithms',
+    'Transparent, rule-based fraud detection',
     'Comprehensive transaction history',
     'Easy peer-to-peer transfers',
     'Multi-card management',
@@ -100,53 +123,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
-      {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <motion.div
-              className="flex items-center gap-3"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="bg-primary/20 p-2 rounded-lg">
-                <Banknote className="h-6 w-6 text-primary" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">SecureBank AI</span>
-            </motion.div>
-
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/features')}
-                className="hover:text-primary"
-              >
-                Features
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/about')}
-                className="hover:text-primary"
-              >
-                About
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/contact')}
-                className="hover:text-primary"
-              >
-                Contact
-              </Button>
-              <Button onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}>
-                {user ? 'Dashboard' : 'Sign In'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      <LandingHeader />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
@@ -167,18 +144,23 @@ export default function Home() {
               variants={itemVariants}
               className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6"
             >
-              Banking Made{' '}
-              <span className="bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-                Intelligent
-              </span>
+              Banking Made Intelligent
             </motion.h1>
+
+            <motion.div
+              variants={itemVariants}
+              className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm text-primary"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              <span>Powered by CAIGA: Comprehensive Artificial Intelligence Governance Architecture</span>
+            </motion.div>
 
             <motion.p
               variants={itemVariants}
               className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
             >
-              Experience secure, AI-powered banking with real-time fraud detection,
-              instant transfers, and intelligent spending insights.
+              Experience secure banking governed by the CAIGA framework, with transparent fraud detection,
+              real-time insights, and every decision built on accountability you can trust.
             </motion.p>
 
             <motion.div
@@ -258,20 +240,27 @@ export default function Home() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
           >
-            {features.map((feature, index) => (
+            {tiles.map((tile) => (
               <motion.div
-                key={feature.title}
+                key={tile.title}
                 variants={itemVariants}
                 whileHover={{ y: -10, transition: { duration: 0.3 } }}
-                className="bg-card border border-border rounded-2xl p-8 hover:bg-card/80 transition-colors"
+                onClick={() => setLocation(tile.route)}
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer bg-card border border-border rounded-3xl p-8 hover:bg-card/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
               >
-                <div className="bg-primary/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-                  <feature.icon className="h-6 w-6 text-primary" />
+                <div className="bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center mb-5">
+                  <tile.icon className="h-7 w-7 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                <p className="text-muted-foreground">{feature.description}</p>
+                <h3 className="text-xl font-semibold mb-3">{tile.title}</h3>
+                <p className="text-muted-foreground mb-6">{tile.description}</p>
+                <div className="inline-flex items-center gap-2 text-primary font-medium">
+                  Learn more
+                  <ArrowRight className="h-4 w-4" />
+                </div>
               </motion.div>
             ))}
           </motion.div>
@@ -289,7 +278,7 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-                Why choose SecureBank?
+                Why choose SmartBank?
               </h2>
               <ul className="space-y-4">
                 {benefits.map((benefit, index) => (
@@ -365,7 +354,7 @@ export default function Home() {
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">Ready to get started?</h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Join thousands of users who trust SecureBank for their financial needs
+              Join thousands of users who trust SmartBank for their financial needs
             </p>
             <Button
               size="lg"
@@ -388,10 +377,10 @@ export default function Home() {
               whileHover={{ scale: 1.05 }}
             >
               <Banknote className="h-6 w-6 text-primary" />
-              <span className="font-bold">SecureBank AI</span>
+              <span className="font-bold">SmartBank</span>
             </motion.div>
             <p className="text-sm text-muted-foreground">
-              © 2024 SecureBank AI. All rights reserved.
+              © 2024 SmartBank. All rights reserved.
             </p>
             <div className="flex gap-6">
               <button

@@ -85,7 +85,7 @@ export default function StorePage() {
     const storedCardNumber = normalize(card.cardNumber);
 
     if (!enteredName || enteredName !== expectedName) {
-      setMessage({ type: 'error', text: 'Cardholder name must match your SecureBank profile name.' });
+      setMessage({ type: 'error', text: 'Cardholder name must match your SmartBank profile name.' });
       return;
     }
 
@@ -120,7 +120,7 @@ export default function StorePage() {
       await createTransaction(user.uid, {
         type: 'withdrawal',
         amount: selectedProduct.price,
-        recipient: `${selectedProduct.name} via SecureBank VCC`,
+        recipient: `${selectedProduct.name} via SmartBank VCC`,
         category: selectedProduct.category,
         flagged: isFlagged,
         flagReason: reasons.join('; '),
@@ -147,7 +147,7 @@ export default function StorePage() {
                 <Store className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-sm font-semibold">SecureBank Demo</p>
+                <p className="text-sm font-semibold">SmartBank Demo</p>
                 <p className="text-xs text-muted-foreground">Virtual checkout</p>
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function StorePage() {
                   <ShoppingBag className="h-4 w-4" />
                   Demo storefront
                 </div>
-                <h1 className="text-3xl font-bold tracking-tight">Buy with your SecureBank virtual card</h1>
+                <h1 className="text-3xl font-bold tracking-tight">Buy with your SmartBank virtual card</h1>
                 <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
                   Choose a product, enter your VCC details, and complete a realistic checkout. Large purchases are automatically flagged for review.
                 </p>
@@ -233,7 +233,7 @@ export default function StorePage() {
                 <div className="mt-4 rounded-2xl border border-dashed border-border bg-muted/50 p-4">
                   <div className="flex items-center gap-2 text-sm font-medium">
                     <CreditCard className="h-4 w-4 text-primary" />
-                    SecureBank VCC payment
+                    SmartBank VCC payment
                   </div>
                   <p className="mt-2 text-sm text-muted-foreground">Enter your card details to confirm the payment. Only the correct VCC details will succeed.</p>
                 </div>

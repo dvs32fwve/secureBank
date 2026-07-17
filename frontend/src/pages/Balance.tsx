@@ -80,7 +80,7 @@ export default function Balance() {
           <motion.div variants={item} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {[
               { icon: Building2, label: 'Account Number', value: '**** **** 4532', sub: 'Checking Account' },
-              { icon: Globe, label: 'Sort Code', value: '04-32-17', sub: 'SecureBank AI' },
+              { icon: Globe, label: 'Sort Code', value: '04-32-17', sub: 'SmartBank' },
               { icon: Wallet, label: 'IBAN', value: 'US83 0043 2170 0453 2000', sub: 'International' },
             ].map(d => (
               <div key={d.label} className="bg-card border border-border rounded-xl p-4">

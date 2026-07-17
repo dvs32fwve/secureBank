@@ -1,6 +1,6 @@
-# SecureBank AI Frontend
+# SmartBank Frontend
 
-The frontend is a Vite-powered React + TypeScript application for SecureBank. It connects to Firebase for authentication and Firestore data, and it calls the backend for user profile and virtual card operations.
+The frontend is a Vite-powered React + TypeScript application for SmartBank. It connects to Firebase for authentication and Firestore data, and it calls the backend for user profile and virtual card operations. The landing pages and feature flows now highlight CAIGA governance and transparent rule-based fraud detection.
 
 ## Table of Contents
 
@@ -27,7 +27,7 @@ The frontend is a Vite-powered React + TypeScript application for SecureBank. It
 - Virtual card generation, repair, and status control
 - Demo store checkout using virtual card data
 - Admin pages for user and transaction review
-- AI fraud detection rules and transaction flagging for large transfers
+- Rule-based fraud detection rules and transaction flagging for large transfers, surfaced through CAIGA governance
 - Hidden API documentation route accessible by direct URL only
 - Responsive layout with modern UI and animations
 - Toast notifications for user feedback
@@ -85,10 +85,10 @@ VITE_FIREBASE_APP_ID=your_app_id
 For production, set:
 
 ```env
-VITE_BACKEND_URL=https://securebankbackend-thbc.onrender.com
+VITE_BACKEND_URL=https://smartbankbackend-thbc.onrender.com
 ```
 
-The frontend now trims extra trailing slashes automatically, so both `https://securebankbackend-thbc.onrender.com` and `https://securebankbackend-thbc.onrender.com/` work.
+The frontend now trims extra trailing slashes automatically, so both `https://smartbankbackend-thbc.onrender.com` and `https://smartbankbackend-thbc.onrender.com/` work.
 
 ## Running the App
 

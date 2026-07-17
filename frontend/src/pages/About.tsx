@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
+import { LandingHeader } from '../components/LandingHeader';
 import {
   Banknote,
   Users,
@@ -70,7 +71,7 @@ export default function About() {
   const timeline = [
     {
       year: '2023',
-      title: 'SecureBank Founded',
+      title: 'SmartBank Founded',
       description: 'Founded with a mission to revolutionize digital banking with AI-powered security.',
     },
     {
@@ -92,54 +93,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
-      {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <motion.button
-              onClick={() => setLocation('/home')}
-              className="flex items-center gap-3 hover:opacity-80 transition"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="bg-primary/20 p-2 rounded-lg">
-                <Banknote className="h-6 w-6 text-primary" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">SecureBank AI</span>
-            </motion.button>
-
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/home')}
-                className="hover:text-primary"
-              >
-                Home
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/features')}
-                className="hover:text-primary"
-              >
-                Features
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/contact')}
-                className="hover:text-primary"
-              >
-                Contact
-              </Button>
-              <Button onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}>
-                {user ? 'Dashboard' : 'Sign In'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      <LandingHeader />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
@@ -179,7 +133,7 @@ export default function About() {
             >
               <h2 className="text-4xl sm:text-5xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                At SecureBank, we believe that banking should be secure, intelligent, and accessible to everyone. Our mission is to democratize financial technology and empower individuals to take control of their financial lives.
+                At SmartBank, we believe that banking should be secure, intelligent, and accessible to everyone. Our mission is to democratize financial technology and empower individuals to take control of their financial lives.
               </p>
               <p className="text-lg text-muted-foreground leading-relaxed">
                 We're committed to combining cutting-edge AI technology with unwavering security standards to create a banking experience that's faster, smarter, and more secure than traditional banking.
@@ -300,7 +254,7 @@ export default function About() {
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">Our Journey</h2>
             <p className="text-lg text-muted-foreground">
-              How SecureBank has evolved since day one
+              How SmartBank has evolved since day one
             </p>
           </motion.div>
 
@@ -389,7 +343,7 @@ export default function About() {
           >
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">Join Our Community</h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Be part of the banking revolution. Start your journey with SecureBank today.
+              Be part of the banking revolution. Start your journey with SmartBank today.
             </p>
             <Button
               size="lg"
@@ -413,10 +367,10 @@ export default function About() {
               whileHover={{ scale: 1.05 }}
             >
               <Banknote className="h-6 w-6 text-primary" />
-              <span className="font-bold">SecureBank AI</span>
+              <span className="font-bold">SmartBank</span>
             </motion.button>
             <p className="text-sm text-muted-foreground">
-              © 2024 SecureBank AI. All rights reserved.
+              © 2024 SmartBank. All rights reserved.
             </p>
             <div className="flex gap-6">
               <button

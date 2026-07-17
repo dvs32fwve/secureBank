@@ -71,7 +71,7 @@ export default function Transfer() {
       }
 
       await refreshUser();
-      toast.success(data.flagged ? 'Transfer completed and flagged for review' : 'Transfer completed successfully');
+      toast.success(data.flagged ? 'Transfer completed successfully. This transaction exceeds your daily transfer limit of $1,000.' : 'Transfer completed successfully');
       setForm({ recipient: '', amount: '', category: 'Other', note: '' });
       setStep('form');
     } catch (err: unknown) {
@@ -156,7 +156,7 @@ export default function Transfer() {
                     {isFlagRisk && (
                       <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-sm text-amber-400">
                         <AlertTriangle className="h-4 w-4 shrink-0" />
-                        Transfers over $1,000 are flagged for review
+                        This transaction exceeds your daily transfer limit of $1,000
                       </div>
                     )}
 
@@ -183,11 +183,11 @@ export default function Transfer() {
                         { label: 'To', value: form.recipient },
                         { label: 'Category', value: form.category },
                         { label: 'Note', value: form.note || '—' },
-                        { label: 'Fraud Flag', value: isFlagRisk ? 'Yes (amount > $1,000)' : 'No' },
+                        { label: 'Transfer Limit', value: isFlagRisk ? 'Exceeded ($1,000)' : 'Within limit' },
                       ].map(r => (
                         <div key={r.label} className="flex justify-between text-sm">
                           <span className="text-muted-foreground">{r.label}</span>
-                          <span className={`font-medium ${r.label === 'Fraud Flag' && isFlagRisk ? 'text-amber-400' : ''}`}>{r.value}</span>
+                          <span className={`font-medium ${r.label === 'Transfer Limit' && isFlagRisk ? 'text-amber-400' : ''}`}>{r.value}</span>
                         </div>
                       ))}
                     </div>

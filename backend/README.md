@@ -1,13 +1,13 @@
-# SecureBank Backend
+# SmartBank Backend
 
-The backend is a Node.js + Express server that powers SecureBank with Firebase authentication verification, user profile management, virtual card generation, and transfer processing.
+The backend is a Node.js + Express server that powers SmartBank with Firebase authentication verification, user profile management, virtual card generation, and transfer processing. It also supports CAIGA-inspired rule-based transfer checks and audit logging.
 
 ## Key Features
 
 - Firebase token authentication using `firebase-admin`
 - Secure user profile creation and lookup
 - Virtual card generation, validation, repair, and status updates
-- Money transfer endpoint with sender/recipient balance updates, transaction records, and fraud flagging
+- Money transfer endpoint with sender/recipient balance updates, transaction records, and CAIGA-style rule-based fraud flagging
 - Firestore batch writes to keep transfers consistent
 - In-memory TTL caching for user and virtual card reads
 - Health check endpoint for deployment readiness
@@ -87,7 +87,7 @@ The backend runs on `http://localhost:5001` by default.
 - Verifies the sender profile exists
 - Checks recipient email against Firestore users
 - Ensures sufficient sender balance
-- Applies flagged status for transfer amounts above $1000
+- Applies flagged status for transfer amounts above $1000 using transparent rule-based limits
 - Writes both sender and recipient transaction records in a Firestore batch
 
 ## Data Model

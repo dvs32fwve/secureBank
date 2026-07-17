@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useLocation } from 'wouter';
 import { Button } from '../components/ui/button';
 import { useAuth } from '../context/AuthContext';
+import { LandingHeader } from '../components/LandingHeader';
 import {
   Banknote,
   ShieldCheck,
@@ -18,6 +19,7 @@ import {
   Eye,
   Cpu,
   ArrowRight,
+  ClipboardCheck,
 } from 'lucide-react';
 
 export default function Features() {
@@ -48,12 +50,26 @@ export default function Features() {
     {
       icon: ShieldCheck,
       title: 'AI Fraud Detection',
-      description: 'Advanced machine learning algorithms monitor every transaction in real-time to detect and prevent fraudulent activities before they happen.',
+      description:
+        'Smart, rule-based transaction monitoring checks every transfer in real time, flagging unusual activity with clear, transparent limits and a plain-language reason for every decision.',
       details: [
         'Real-time transaction analysis',
-        'Machine learning algorithms',
-        'Immediate fraud alerts',
-        '24/7 monitoring',
+        'Transparent, rule-based limit checks',
+        'Instant alerts with clear explanations',
+        '24/7 monitoring dashboard for admins',
+      ],
+    },
+    {
+      icon: ClipboardCheck,
+      title: 'CAIGA Governance',
+      description:
+        'SmartBank’s intelligent features are built on five core governance principles so every automated decision can be trusted and verified.',
+      details: [
+        'Transparency in every alert',
+        'Explainable, rule-based decisions',
+        'Full audit accountability',
+        'Continuous monitoring',
+        'Secure by design',
       ],
     },
     {
@@ -166,54 +182,7 @@ export default function Features() {
 
   return (
     <div className="min-h-screen bg-background overflow-hidden">
-      {/* Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="fixed top-0 w-full bg-background/80 backdrop-blur-md border-b border-border z-50"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <motion.button
-              onClick={() => setLocation('/home')}
-              className="flex items-center gap-3 hover:opacity-80 transition"
-              whileHover={{ scale: 1.05 }}
-            >
-              <div className="bg-primary/20 p-2 rounded-lg">
-                <Banknote className="h-6 w-6 text-primary" />
-              </div>
-              <span className="text-xl font-bold tracking-tight">SecureBank AI</span>
-            </motion.button>
-
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/home')}
-                className="hover:text-primary"
-              >
-                Home
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/about')}
-                className="hover:text-primary"
-              >
-                About
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={() => setLocation('/contact')}
-                className="hover:text-primary"
-              >
-                Contact
-              </Button>
-              <Button onClick={() => setLocation(user ? (user.role === 'admin' ? '/admin/dashboard' : '/dashboard') : '/login')}>
-                {user ? 'Dashboard' : 'Sign In'}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.nav>
+      <LandingHeader />
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
@@ -236,9 +205,29 @@ export default function Features() {
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Explore our powerful suite of tools designed to make banking easier,
-              safer, and smarter
+              safer, and smarter.
             </p>
           </motion.div>
+
+          <div className="rounded-3xl border border-primary/20 bg-primary/5 p-8 mb-16">
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h2 className="text-3xl font-semibold mb-3">Powered by CAIGA</h2>
+                <p className="text-muted-foreground max-w-3xl">
+                  Every feature on this page is governed by the Comprehensive Artificial Intelligence
+                  Governance Architecture, ensuring transactions are transparent, explainable,
+                  accountable, monitored, and secure.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setLocation('/caiga-framework')}
+                className="w-full lg:w-auto"
+              >
+                Learn more about CAIGA →
+              </Button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -342,7 +331,7 @@ export default function Features() {
             viewport={{ once: true }}
             className="text-center mb-16"
           >
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4">Why SecureBank?</h2>
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4">Why SmartBank?</h2>
             <p className="text-lg text-muted-foreground">
               Compare our features with other banking solutions
             </p>
@@ -363,7 +352,7 @@ export default function Features() {
                     <th className="px-6 py-4 text-center font-semibold">
                       <div className="flex items-center justify-center gap-2">
                         <Banknote className="h-5 w-5 text-primary" />
-                        SecureBank
+                        SmartBank
                       </div>
                     </th>
                     <th className="px-6 py-4 text-center font-semibold text-muted-foreground">
@@ -373,12 +362,12 @@ export default function Features() {
                 </thead>
                 <tbody>
                   {[
-                    { feature: 'AI Fraud Detection', securebank: true, traditional: false },
-                    { feature: 'Real-time Transfers', securebank: true, traditional: false },
-                    { feature: 'Mobile-First Design', securebank: true, traditional: false },
-                    { feature: '24/7 Access', securebank: true, traditional: false },
-                    { feature: 'Low Fees', securebank: true, traditional: false },
-                    { feature: 'Spending Analytics', securebank: true, traditional: false },
+                    { feature: 'AI Fraud Detection', smartbank: true, traditional: false },
+                    { feature: 'Real-time Transfers', smartbank: true, traditional: false },
+                    { feature: 'Mobile-First Design', smartbank: true, traditional: false },
+                    { feature: '24/7 Access', smartbank: true, traditional: false },
+                    { feature: 'Low Fees', smartbank: true, traditional: false },
+                    { feature: 'Spending Analytics', smartbank: true, traditional: false },
                   ].map((item, index) => (
                     <motion.tr
                       key={item.feature}
@@ -390,7 +379,7 @@ export default function Features() {
                     >
                       <td className="px-6 py-4 font-medium">{item.feature}</td>
                       <td className="px-6 py-4 text-center">
-                        {item.securebank ? (
+                        {item.smartbank ? (
                           <Shield className="h-5 w-5 text-primary mx-auto" />
                         ) : (
                           <span className="text-muted-foreground">-</span>
@@ -449,10 +438,10 @@ export default function Features() {
               whileHover={{ scale: 1.05 }}
             >
               <Banknote className="h-6 w-6 text-primary" />
-              <span className="font-bold">SecureBank AI</span>
+              <span className="font-bold">SmartBank</span>
             </motion.button>
             <p className="text-sm text-muted-foreground">
-              © 2024 SecureBank AI. All rights reserved.
+              © 2024 SmartBank. All rights reserved.
             </p>
             <div className="flex gap-6">
               <button

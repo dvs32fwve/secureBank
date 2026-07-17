@@ -1,6 +1,6 @@
 # Backend How to Run
 
-This backend provides the SecureBank API and handles user profile creation, virtual card management, and protected Firebase token verification.
+This backend provides the SmartBank API and handles user profile creation, virtual card management, protected Firebase token verification, and CAIGA-style transfer evaluation.
 
 ## Prerequisites
 

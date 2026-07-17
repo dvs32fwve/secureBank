@@ -42,7 +42,7 @@ export default function ApiDocs() {
               <BookOpen className="h-5 w-5 text-primary" />
             </div>
             <div>
-              <p className="text-sm font-semibold">SecureBank API Docs</p>
+              <p className="text-sm font-semibold">SmartBank API Docs</p>
               <p className="text-xs text-muted-foreground">Simple developer reference</p>
             </div>
           </div>
@@ -63,7 +63,7 @@ export default function ApiDocs() {
           </div>
           <h1 className="mt-3 text-3xl font-bold tracking-tight">Simple backend documentation</h1>
           <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-            This page gives a lightweight overview of the main backend endpoints used by SecureBank for auth, cards, and money transfers. It is available without signing in.
+            This page gives a lightweight overview of the main backend endpoints used by SmartBank for auth, cards, and money transfers. It is available without signing in.
           </p>
         </section>
 

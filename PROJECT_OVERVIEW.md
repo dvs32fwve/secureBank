@@ -1,6 +1,6 @@
-# SecureBank Project Overview
+# SmartBank Project Overview
 
-SecureBank is a full-stack demo banking application built with React, TypeScript, Firebase, and Node.js. It combines a responsive frontend, a secure backend API, and Firestore-backed data storage to showcase a modern banking experience with authentication, transactions, virtual cards, and admin controls.
+SmartBank is a full-stack demo banking application built with React, TypeScript, Firebase, and Node.js. It combines a responsive frontend, a secure backend API, and Firestore-backed data storage to showcase a modern banking experience governed by CAIGA — the Comprehensive Artificial Intelligence Governance Architecture — with transparent transfer rules, fraud detection, and audit-ready workflows.
 
 ## Project Summary
 
@@ -17,7 +17,7 @@ The project is split into two main packages:
 - Firestore-backed user profiles and transaction history
 - Virtual card support with automatic creation and repair
 - Secure transfer flow with sender/recipient balance updates
-- Transfer flagging for high-value transactions (> $1000)
+- Transparent, rule-based transfer flagging for high-value transactions (> $1000) under CAIGA governance
 - Admin views for user and transaction monitoring
 - Separate customer and admin dashboards
 - Public API documentation page at `/api-docs`, hidden from the main sidebar menu and accessible only by direct URL
@@ -129,13 +129,13 @@ Default app URL: `http://localhost:5173`
 
 The project is deployed on Render:
 
-- Backend: `https://securebankbackend-thbc.onrender.com`
+- Backend: `https://smartbankbackend-thbc.onrender.com`
   - Service ID: `srv-d9ahlua8qa3s73aqh200`
-  - Repo: [dvs32fwve/secureBankmain](https://github.com/dvs32fwve/secureBank/tree/main)
+  - Repo: [dvs32fwve/smartBankmain](https://github.com/dvs32fwve/smartBank/tree/main)
 
-- Frontend: `https://securebank-6may.onrender.com`
+- Frontend: `https://smartbank-6may.onrender.com`
   - Service ID: `srv-d93rtbvlk1mc739tlou0`
-  - Repo: [dvs32fwve/secureBankmain](https://github.com/dvs32fwve/secureBank/tree/main)
+  - Repo: [dvs32fwve/smartBankmain](https://github.com/dvs32fwve/smartBank/tree/main)
 
 ## Environment Setup
 
@@ -166,7 +166,7 @@ VITE_FIREBASE_APP_ID=...
 
 - The frontend `AuthContext` listens for Firebase auth state changes and keeps user data synchronized with Firestore.
 - The backend uses in-memory caching for user and virtual card reads to reduce repeated Firestore queries.
-- Transfers are performed with Firestore batch writes to ensure both sender and recipient balances update together.
+- Transfers are evaluated with CAIGA-inspired rule checks and audit logging, then performed with Firestore batch writes to ensure both sender and recipient balances update together.
 - The API docs page is intentionally hidden from the sidebar menu but still accessible directly.
 - Frontend API requests now normalize `VITE_BACKEND_URL` and remove extra slashes automatically.
 
