@@ -5,16 +5,16 @@ const principleMap = [
   {
     principle: 'Transparency',
     description:
-      'SmartBank tells customers whenever a transaction is checked against fraud rules so no action happens invisibly.',
-    feature: 'Clear, immediate fraud check notifications and alert explanations',
+      'SmartBank tells customers whenever a transaction is checked against fraud rules and IP-based signals so no action happens invisibly.',
+    feature: 'Clear, immediate fraud check notifications and IP-based alert explanations',
     icon: Eye,
   },
   {
     principle: 'Explainability',
     description:
-      'Every flagged transaction includes a specific plain language reason, not a vague label.',
+      'Every flagged transaction includes a specific plain language reason, not a vague label, including why an unusual IP pattern triggered review.',
     feature:
-      'Detailed explanations that say the transfer exceeded the limit, not that the activity was simply suspicious',
+      'Detailed explanations that say the transfer exceeded the limit or matched an unusual IP pattern, not that the activity was simply suspicious',
     icon: ArrowRightCircle,
   },
   {
@@ -149,7 +149,7 @@ export default function CaigaFramework() {
       <div className="mt-12 bg-card border border-border rounded-3xl p-8">
         <h2 className="text-3xl font-semibold mb-4">Why this matters for SmartBank</h2>
         <p className="text-muted-foreground mb-4">
-          Fraud detection in SmartBank is rule based, not a black box model. That means every decision can be traced back to a specific human readable rule. Customers see the reason, and regulators can inspect the process.
+          Fraud detection in SmartBank is rule based, not a black box model. It combines rule checks with IP-based signals so every decision can be traced back to a specific human readable reason. Customers see the reason, and regulators can inspect the process.
         </p>
         <p className="text-muted-foreground">
           This makes SmartBank a clear example of governed AI in a real banking context, not just a compliance checkbox.

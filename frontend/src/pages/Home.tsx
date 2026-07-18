@@ -71,7 +71,7 @@ export default function Home() {
     {
       icon: ShieldCheck,
       title: 'Fraud Detection',
-      description: 'Real-time threat monitoring and intelligent alerts.',
+      description: 'Real-time threat monitoring with IP-based fraud detection and intelligent alerts.',
       route: '/fraud-detection',
     },
     {
@@ -115,7 +115,7 @@ export default function Home() {
   const benefits = [
     'Secure authentication with Google OAuth',
     'Real-time balance and transaction updates',
-    'Transparent, rule-based fraud detection',
+    'Transparent, IP-based fraud detection',
     'Comprehensive transaction history',
     'Easy peer-to-peer transfers',
     'Multi-card management',
@@ -159,7 +159,7 @@ export default function Home() {
               variants={itemVariants}
               className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8"
             >
-              Experience secure banking governed by the CAIGA framework, with transparent fraud detection,
+              Experience secure banking governed by the CAIGA framework, with transparent IP-based fraud detection,
               real-time insights, and every decision built on accountability you can trust.
             </motion.p>
 
