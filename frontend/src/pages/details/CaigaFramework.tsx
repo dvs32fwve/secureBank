@@ -49,15 +49,48 @@ export default function CaigaFramework() {
       <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr]">
         <div className="space-y-6">
           <div className="bg-card border border-border rounded-3xl p-8">
-            <h2 className="text-3xl font-semibold mb-4">What makes CAIGA different?</h2>
-            <p className="text-muted-foreground mb-4">
-              Most banking apps treat fraud checks and spending analysis as invisible background logic. A transaction either goes through or is blocked with little explanation for the customer or oversight for staff.
-            </p>
-            <p className="text-muted-foreground mb-4">
-              SmartBank takes a different approach. Fraud Detection and Spending Insights are built around CAIGA's five governance principles. This means the system is not just smart, it is governed.
-            </p>
-            <p className="text-muted-foreground">
-              That makes SmartBank a concrete example of governed AI in practice: decisions are traceable, explainable, and open to review, not just automated.
+            <div className="flex items-center gap-3 mb-4">
+              <div className="rounded-2xl bg-primary/10 p-3 text-primary">
+                <ShieldCheck className="h-6 w-6" />
+              </div>
+              <div>
+                <h2 className="text-3xl font-semibold">CAIGA in motion</h2>
+                <p className="text-sm text-muted-foreground">A visual map of how governance turns into visible banking protection.</p>
+              </div>
+            </div>
+
+            <div className="mt-6 overflow-hidden rounded-3xl border border-border/70 bg-background/70 p-4">
+              <svg viewBox="0 0 640 260" className="w-full h-auto" role="img" aria-label="Three tier governance structure showing Rules, Oversight, and Audit">
+                <rect x="40" y="30" width="180" height="90" rx="24" fill="#111827" />
+                <rect x="230" y="30" width="180" height="90" rx="24" fill="#1f2937" />
+                <rect x="420" y="30" width="180" height="90" rx="24" fill="#111827" />
+                <circle cx="130" cy="160" r="30" fill="#0f766e" />
+                <circle cx="320" cy="160" r="30" fill="#0f766e" />
+                <circle cx="510" cy="160" r="30" fill="#0f766e" />
+                <path d="M130 190 L130 231" stroke="#4b5563" strokeWidth="4" strokeLinecap="round" />
+                <path d="M320 190 L320 231" stroke="#4b5563" strokeWidth="4" strokeLinecap="round" />
+                <path d="M510 190 L510 231" stroke="#4b5563" strokeWidth="4" strokeLinecap="round" />
+                <rect x="70" y="231" width="120" height="40" rx="16" fill="#0f172a" />
+                <rect x="260" y="231" width="120" height="40" rx="16" fill="#0f172a" />
+                <rect x="450" y="231" width="120" height="40" rx="16" fill="#0f172a" />
+                <path d="M220 75 L230 75" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <path d="M410 75 L420 75" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <path d="M130 110 L130 130" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <path d="M320 110 L320 130" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <path d="M510 110 L510 130" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <path d="M130 130 L320 130" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <path d="M320 130 L510 130" stroke="#f59e0b" strokeWidth="4" strokeLinecap="round" />
+                <text x="130" y="80" textAnchor="middle" fill="#f8fafc" fontSize="20" fontWeight="600">Rules</text>
+                <text x="320" y="80" textAnchor="middle" fill="#f8fafc" fontSize="20" fontWeight="600">Oversight</text>
+                <text x="510" y="80" textAnchor="middle" fill="#f8fafc" fontSize="20" fontWeight="600">Audit</text>
+                <text x="130" y="248" textAnchor="middle" fill="#f8fafc" fontSize="14">Policy checks</text>
+                <text x="320" y="248" textAnchor="middle" fill="#f8fafc" fontSize="14">Review &amp; control</text>
+                <text x="510" y="248" textAnchor="middle" fill="#f8fafc" fontSize="14">Traceable evidence</text>
+              </svg>
+            </div>
+
+            <p className="text-muted-foreground mt-6">
+              SmartBank turns CAIGA into a visible loop: rules decide, oversight reviews, and audit records keep the whole process accountable.
             </p>
           </div>
 
@@ -76,6 +109,20 @@ export default function CaigaFramework() {
 
         <div className="bg-card border border-border rounded-3xl p-8">
           <h2 className="text-2xl font-semibold mb-6">The Five CAIGA Principles</h2>
+
+          <div className="mb-6 overflow-hidden rounded-3xl border border-border/70 bg-gradient-to-br from-primary/10 via-background to-background p-5">
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="rounded-2xl border border-primary/20 bg-background/80 p-4">
+                <p className="text-sm font-semibold text-primary">Principle mapping</p>
+                <p className="text-sm text-muted-foreground mt-2">Transparency, explainability, accountability, monitoring, and security & privacy are expressed through visible system behavior.</p>
+              </div>
+              <div className="rounded-2xl border border-border/70 bg-background/80 p-4">
+                <p className="text-sm font-semibold text-foreground">How it appears in the product</p>
+                <p className="text-sm text-muted-foreground mt-2">Customers receive notices, admins review flagged events, and audit trails support every governance decision.</p>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-4">
             {principleMap.map((item) => {
               const Icon = item.icon;
