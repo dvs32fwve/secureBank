@@ -244,15 +244,18 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
     const recipientId = recipientDoc.id;
     const recipientData = recipientDoc.data();
 
-    // Evaluate outbound transfer rules and collect audit records
+    const countryCode = typeof req.body?.countryCode === 'string' ? req.body.countryCode.toUpperCase() : '';
     const transferRisk = evaluateTransferRisk({
       amount: parsedAmount,
       category,
       isIncoming: false,
+      country: countryCode,
     });
 
     const ruleResults = transferRisk.ruleResults;
     const flagged = transferRisk.flagged;
+    const requiresVerification = transferRisk.requiresVerification;
+    const securityNotice = transferRisk.securityNotice;
     const flagReasonText = transferRisk.flagReason;
     const flagReasons = flagged ? [flagReasonText] : [];
 
@@ -302,23 +305,35 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
       });
     }
 
+    if (requiresVerification) {
+      const verificationAuditRef = db.collection('auditLogs').doc();
+      batch.set(verificationAuditRef, {
+        userId: senderId,
+        email: senderData?.email || '',
+        country: countryCode || 'Unknown',
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        amount: parsedAmount,
+        eventType: 'Outside Banking Region',
+      });
+    }
+
     // Summary audit log
     const summaryRef = db.collection('auditLogs').doc();
     batch.set(summaryRef, {
       userId: senderId,
       transactionId: senderTxRef.id,
-      outcome: flagged,
+      outcome: flagged || requiresVerification,
       flagReasons,
       amount: parsedAmount,
       recipient: normalizedRecipientEmail,
       category,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
-      note: 'Fraud evaluation summary',
+      note: requiresVerification ? 'Security verification required' : 'Fraud evaluation summary',
     });
 
     await batch.commit();
 
-    return res.json({ success: true, message: 'Transfer completed successfully', flagged, flagReasons });
+    return res.json({ success: true, message: 'Transfer completed successfully', flagged, requiresVerification, flagReasons, securityNotice });
   } catch (error) {
     console.error('Failed to create transfer:', error);
     return res.status(500).json({ error: 'Failed to create transfer' });

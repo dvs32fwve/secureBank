@@ -32,6 +32,8 @@ function txIcon(type: string) {
   return <ArrowLeftRight className="h-4 w-4 text-primary" />;
 }
 
+const RECENT_TX_PAGE_SIZE = 5;
+
 function txColor(type: string) {
   if (type === 'deposit') return 'text-emerald-400';
   return 'text-destructive';
@@ -42,6 +44,7 @@ export default function CustomerDashboard() {
   const [, setLocation] = useLocation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
+  const [recentPage, setRecentPage] = useState(1);
 
   useEffect(() => {
     if (!user) return;
@@ -84,7 +87,15 @@ export default function CustomerDashboard() {
     total,
   }));
 
-  const recent = transactions.slice(0, 5);
+  const recent = transactions;
+  const recentPageCount = Math.max(1, Math.ceil(recent.length / RECENT_TX_PAGE_SIZE));
+  const safeRecentPage = Math.min(recentPage, recentPageCount);
+  const startRecentIndex = (safeRecentPage - 1) * RECENT_TX_PAGE_SIZE;
+  const pagedRecent = recent.slice(startRecentIndex, startRecentIndex + RECENT_TX_PAGE_SIZE);
+
+  useEffect(() => {
+    setRecentPage(1);
+  }, [transactions.length]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -197,8 +208,8 @@ export default function CustomerDashboard() {
             ) : recent.length === 0 ? (
               <p className="text-muted-foreground text-sm text-center py-8">No transactions yet</p>
             ) : (
-              <div className="space-y-2">
-                {recent.map((tx) => (
+              <div className="space-y-3">
+                {pagedRecent.map((tx) => (
                   <div key={tx.id} className="flex items-center justify-between py-3 border-b border-border last:border-0" data-testid={`tx-row-${tx.id}`}>
                     <div className="flex items-center gap-3">
                       <div className="bg-muted p-2 rounded-lg">{txIcon(tx.type)}</div>
@@ -215,6 +226,28 @@ export default function CustomerDashboard() {
                     </div>
                   </div>
                 ))}
+                <div className="flex items-center justify-between border-t border-border pt-3">
+                  <p className="text-sm text-muted-foreground">
+                    {recent.length === 0 ? 'No records' : `Showing ${pagedRecent.length} record${pagedRecent.length === 1 ? '' : 's'} on this page`}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => setRecentPage((p) => Math.max(1, p - 1))}
+                      disabled={safeRecentPage === 1}
+                      className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                    >
+                      Previous
+                    </button>
+                    <span className="text-sm text-muted-foreground">Page {safeRecentPage} of {recentPageCount}</span>
+                    <button
+                      onClick={() => setRecentPage((p) => Math.min(recentPageCount, p + 1))}
+                      disabled={safeRecentPage === recentPageCount}
+                      className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </motion.div>

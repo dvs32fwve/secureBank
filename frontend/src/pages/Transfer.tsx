@@ -5,7 +5,7 @@ import { auth } from '../firebase/config';
 import { Layout } from '../components/Layout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeftRight, AlertTriangle, CheckCircle2, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ArrowLeftRight, AlertTriangle, CheckCircle2, ChevronRight, ChevronLeft, ShieldAlert } from 'lucide-react';
 import { toast } from 'sonner';
 
 const BACKEND_URL = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5001').replace(/\/+$/, '');
@@ -28,6 +28,7 @@ export default function Transfer() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({ recipient: '', amount: '', category: 'Other', note: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [securityNotice, setSecurityNotice] = useState<{ title: string; message: string } | null>(null);
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -46,11 +47,31 @@ export default function Transfer() {
     setStep('confirm');
   };
 
+  const resolveClientLocation = async () => {
+    try {
+      const [ipResponse, geoResponse] = await Promise.all([
+        fetch('https://api.ipify.org?format=json'),
+        fetch('https://ipapi.co/json/'),
+      ]);
+
+      const ipData = ipResponse.ok ? await ipResponse.json() : {};
+      const geoData = geoResponse.ok ? await geoResponse.json() : {};
+
+      return {
+        ipAddress: typeof ipData?.ip === 'string' ? ipData.ip : '',
+        countryCode: typeof geoData?.country_code === 'string' ? geoData.country_code.toUpperCase() : '',
+      };
+    } catch {
+      return { ipAddress: '', countryCode: '' };
+    }
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const amount = parseFloat(form.amount);
       const token = await getIdToken(auth.currentUser!);
+      const clientLocation = await resolveClientLocation();
       const response = await fetch(buildUrl(BACKEND_URL, '/transfer'), {
         method: 'POST',
         headers: {
@@ -62,6 +83,8 @@ export default function Transfer() {
           amount,
           category: form.category,
           note: form.note,
+          ipAddress: clientLocation.ipAddress,
+          countryCode: clientLocation.countryCode,
         }),
       });
 
@@ -71,7 +94,17 @@ export default function Transfer() {
       }
 
       await refreshUser();
-      toast.success(data.flagged ? 'Transfer completed successfully. This transaction exceeds your daily transfer limit of $1,000.' : 'Transfer completed successfully');
+      if (data.securityNotice) {
+        setSecurityNotice(data.securityNotice);
+      } else {
+        setSecurityNotice(null);
+      }
+
+      const successMessage = data.flagged
+        ? 'Transfer completed successfully. The transaction was flagged for CAIGA review due to the banking-region risk.'
+        : 'Transfer completed successfully';
+
+      toast.success(successMessage);
       setForm({ recipient: '', amount: '', category: 'Other', note: '' });
       setStep('form');
     } catch (err: unknown) {
@@ -157,6 +190,16 @@ export default function Transfer() {
                       <div className="flex items-center gap-2 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 text-sm text-amber-400">
                         <AlertTriangle className="h-4 w-4 shrink-0" />
                         This transaction exceeds your daily transfer limit of $1,000
+                      </div>
+                    )}
+
+                    {securityNotice && (
+                      <div className="rounded-xl border border-primary/20 bg-primary/10 p-4 text-sm text-primary-foreground/90">
+                        <div className="flex items-center gap-2 font-semibold mb-2">
+                          <ShieldAlert className="h-4 w-4" />
+                          {securityNotice.title}
+                        </div>
+                        <p className="whitespace-pre-line leading-6">{securityNotice.message}</p>
                       </div>
                     )}
 

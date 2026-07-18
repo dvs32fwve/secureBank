@@ -245,6 +245,11 @@ export const getAllTransactions = async (): Promise<Transaction[]> => {
   return snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Transaction));
 };
 
+export const clearTransactionFlag = async (transactionId: string) => {
+  const transactionRef = doc(db, 'transactions', transactionId);
+  await updateDoc(transactionRef, { flagged: false, flagReason: '' });
+};
+
 export const getVirtualCard = async (): Promise<VirtualCard> => {
   return backendRequest('/virtual-card');
 };

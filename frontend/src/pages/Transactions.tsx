@@ -13,6 +13,8 @@ function formatCurrency(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 }
 
+const PAGE_SIZE = 10;
+
 const FILTERS: { label: string; value: Filter }[] = [
   { label: 'All', value: 'all' },
   { label: 'Transfers', value: 'transfer' },
@@ -31,6 +33,7 @@ export default function Transactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>('all');
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     if (!user) return;
@@ -41,6 +44,14 @@ export default function Transactions() {
   }, [user]);
 
   const filtered = filter === 'all' ? transactions : transactions.filter(t => t.type === filter);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const safePage = Math.min(page, totalPages);
+  const startIndex = (safePage - 1) * PAGE_SIZE;
+  const pagedTransactions = filtered.slice(startIndex, startIndex + PAGE_SIZE);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter]);
 
   return (
     <ProtectedRoute>
@@ -81,8 +92,9 @@ export default function Transactions() {
                 <p className="text-muted-foreground">No transactions found</p>
               </div>
             ) : (
-              <div className="divide-y divide-border">
-                {filtered.map((tx, i) => (
+              <div>
+                <div className="divide-y divide-border">
+                  {pagedTransactions.map((tx, i) => (
                   <motion.div
                     key={tx.id}
                     initial={{ opacity: 0, y: 8 }}
@@ -114,7 +126,32 @@ export default function Transactions() {
                       </div>
                     </div>
                   </motion.div>
-                ))}
+                  ))}
+                </div>
+                {filtered.length > 0 && (
+                  <div className="flex flex-col gap-3 border-t border-border bg-muted/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-sm text-muted-foreground">
+                      {filtered.length === 0 ? 'No records' : `Showing ${pagedTransactions.length} record${pagedTransactions.length === 1 ? '' : 's'} on this page`}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setPage(p => Math.max(1, p - 1))}
+                        disabled={safePage === 1}
+                        className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-sm text-muted-foreground">Page {safePage} of {totalPages}</span>
+                      <button
+                        onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                        disabled={safePage === totalPages}
+                        className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </motion.div>

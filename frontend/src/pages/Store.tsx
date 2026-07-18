@@ -111,23 +111,31 @@ export default function StorePage() {
 
     setSubmitting(true);
     try {
-      // Evaluate local store fraud reasons (mirrors backend transfer rules where applicable)
-      const reasons: string[] = [];
-      if (selectedProduct.price > FRAUD_THRESHOLD) reasons.push('high_value');
-      if (selectedProduct.category.toLowerCase() === 'gift cards' && selectedProduct.price > 500) reasons.push('high_risk_category');
+      // Apply local store fraud rules before sending the transaction.
+      const isGiftCardRisk = selectedProduct.category.toLowerCase() === 'gift cards' && selectedProduct.price > 500;
+      const isHighValueWarning = selectedProduct.price > FRAUD_THRESHOLD && !isGiftCardRisk;
+      const flagReason = isGiftCardRisk ? 'High risk category - Gift Card purchase' : '';
+      const isFlagged = isGiftCardRisk;
 
-      const isFlagged = reasons.length > 0;
+      if (isHighValueWarning) {
+        toast.warning('This purchase exceeds your daily limit of $1,000');
+      }
+
       await createTransaction(user.uid, {
         type: 'withdrawal',
         amount: selectedProduct.price,
         recipient: `${selectedProduct.name} via SmartBank VCC`,
         category: selectedProduct.category,
         flagged: isFlagged,
-        flagReason: reasons.join('; '),
+        flagReason,
       });
 
       await refreshUser();
-      toast.success(isFlagged ? `Purchase approved and flagged for review because it exceeded $${FRAUD_THRESHOLD}.` : 'Payment completed successfully.');
+      if (isFlagged) {
+        toast.success('Purchase completed successfully and flagged for review.');
+      } else {
+        toast.success('Payment completed successfully.');
+      }
       handleCloseCheckout();
     } catch (error) {
       const text = error instanceof Error ? error.message : 'Payment failed';

@@ -1,95 +1,96 @@
 # SmartBank Project Overview
 
-SmartBank is a full-stack demo banking application built with React, TypeScript, Firebase, and Node.js. It combines a responsive frontend, a secure backend API, and Firestore-backed data storage to showcase a modern banking experience governed by CAIGA — the Comprehensive Artificial Intelligence Governance Architecture — with transparent transfer rules, fraud detection, and audit-ready workflows.
+SmartBank is a full-stack banking demo that combines a React + TypeScript frontend, an Express backend, and Firebase Firestore data to showcase a CAIGA-inspired governance experience. The prototype emphasizes transparent security decisions, auditability, and a polished admin/customer workflow for a realistic demo.
 
-## Project Summary
+## Project Structure
 
-The project is split into two main packages:
+- Backend: Express server with Firebase Admin authentication, Firestore access, virtual card handling, transfer processing, and audit logging.
+- Frontend: Vite + React app with customer and admin dashboards, public marketing pages, protected routes, and a hidden API documentation view.
 
-- `backend/` — Express server that verifies Firebase tokens, manages user profiles, generates virtual cards, and processes transfers.
-- `frontend/` — React + Vite application for customers and admins, including role-based dashboards and a hidden `/api-docs` page.
+## Current Product Scope
 
-## Features
+### Customer experience
+- Google sign-in and profile creation through Firebase Auth
+- Personal dashboard with balance, recent transactions, and quick navigation
+- Virtual card generation, repair, and status control
+- Secure transfer flow that includes a plain-language security notice for non-Australia/New Zealand transfers
+- Transaction history and store-style purchase simulation
 
-### Core Functionality
+### Admin experience
+- Dedicated admin dashboard for monitoring flagged activity
+- Transaction review list with admin actions to clear flagged status
+- User and transaction management views for demo governance scenarios
+- Paginated transaction lists to make long histories easier to review
 
-- User authentication with Firebase Google sign-in
-- Firestore-backed user profiles and transaction history
-- Virtual card support with automatic creation and repair
-- Secure transfer flow with sender/recipient balance updates
-- Transparent, rule-based transfer flagging for high-value transactions (> $1000) under CAIGA governance
-- Admin views for user and transaction monitoring
-- Separate customer and admin dashboards
-- Public API documentation page at `/api-docs`, hidden from the main sidebar menu and accessible only by direct URL
+### Security and governance demo features
+- Rule-based transfer risk evaluation with CAIGA-style logic
+- Frontend-supplied country metadata used during transfer evaluation
+- Audit log entries for outside-region transfers
+- Client IP display in the app shell for a more realistic security narrative
+- Hidden API documentation route at /api-docs for developers and auditors
 
-### Frontend Experience
-
-- Modern responsive UI with Tailwind and Framer Motion
-- Protected authenticated routes with `ProtectedRoute`
-- Role-aware redirects and separate dashboards for customers and admins
-- Live Firestore profile sync via `AuthContext`
-- Demo store experience using virtual card checkout
-- Real-time dashboard updates for balance and transactions
-- Clear admin pages for user and transaction review
-
-### Backend Responsibilities
+## Backend Responsibilities
 
 - Validate Firebase ID tokens on protected routes
-- Create or fetch user profiles from Firestore
-- Generate and repair virtual cards stored in Firestore
-- Update card status between `active` and `blocked`
-- Execute transfers in Firestore batches
-- Cache user and card reads to improve performance
+- Create or fetch Firestore-backed user profiles
+- Generate and repair virtual cards
+- Update card status between active and blocked
+- Process transfers with balance updates and transaction records
+- Evaluate transfer risk and write audit logs for review-worthy activity
+- Use lightweight caching for user and card lookups
 
-## API Endpoints
+## Frontend Responsibilities
 
-### Public Endpoints
+- Render the public marketing pages and auth flow
+- Protect customer and admin routes with role-aware navigation
+- Sync auth state and user data with Firestore
+- Send transfer metadata to the backend for risk evaluation
+- Display security notices, transaction history, and admin actions in an intuitive UI
 
-- `GET /` — Welcome response
-- `GET /health` — Health check endpoint
+## API Surface
 
-### Protected Endpoints
+### Public endpoints
+- GET /
+- GET /health
 
-All protected endpoints require `Authorization: Bearer <token>`.
+### Protected endpoints
+- POST /users
+- GET /virtual-card
+- POST /virtual-card/repair
+- PATCH /virtual-card
+- POST /transfer
 
-- `POST /users` — Create or return the current user profile
-- `GET /virtual-card` — Return the authenticated user's virtual card
-- `POST /virtual-card/repair` — Recreate or repair the user's card
-- `PATCH /virtual-card` — Update virtual card status
-- `POST /transfer` — Transfer money to another user by email
+## Main Routes
 
-## Frontend Routes
+- /home
+- /features
+- /about
+- /contact
+- /login
+- /dashboard
+- /balance
+- /transfer
+- /transactions
+- /profile
+- /card
+- /store
+- /admin/dashboard
+- /admin/users
+- /admin/transactions
+- /api-docs
 
-- `/home` — Landing page
-- `/features` — Product feature page
-- `/about` — About page
-- `/contact` — Contact page
-- `/login` — Sign in page
-- `/dashboard` — User dashboard
-- `/balance` — Balance page
-- `/transfer` — Transfer page
-- `/transactions` — Transaction history page
-- `/profile` — Profile page
-- `/card` — Virtual card page
-- `/store` — Demo storefront
-- `/admin/users` — Admin user list
-- `/admin/transactions` — Admin transaction review
-- `/api-docs` — API documentation page
-
-## Technologies Used
+## Technology Stack
 
 ### Backend
-
 - Node.js
 - Express
 - Firebase Admin SDK
 - Firestore
-- CORS
 - dotenv
-- nodemon (dev)
+- CORS
+- nodemon
 
 ### Frontend
-
 - React
 - TypeScript
 - Vite
@@ -103,87 +104,30 @@ All protected endpoints require `Authorization: Bearer <token>`.
 - Zod
 - Recharts
 
-## Deployment and Running
+## Running the Project
 
 ### Backend
-
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-Default server URL: `http://localhost:5001`
-
 ### Frontend
-
 ```bash
 cd frontend
 pnpm install
 pnpm run dev
 ```
 
-Default app URL: `http://localhost:5173`
+## Environment Notes
 
-## Production Deployment
+- Backend uses environment values from backend/.env
+- Frontend uses environment values from frontend/.env
+- Firebase credentials and backend URL must be configured before signing in or making transfers
 
-The project is deployed on Render:
+## Notes for Demo Use
 
-- Backend: `https://smartbankbackend-thbc.onrender.com`
-  - Service ID: `srv-d9ahlua8qa3s73aqh200`
-  - Repo: [dvs32fwve/smartBankmain](https://github.com/dvs32fwve/smartBank/tree/main)
-
-- Frontend: `https://smartbank-6may.onrender.com`
-  - Service ID: `srv-d93rtbvlk1mc739tlou0`
-  - Repo: [dvs32fwve/smartBankmain](https://github.com/dvs32fwve/smartBank/tree/main)
-
-## Environment Setup
-
-### Backend
-
-Use `backend/.env.example` to create `backend/.env`:
-
-```env
-PORT=5001
-NODE_ENV=development
-```
-
-### Frontend
-
-Use `frontend/.env.example` to create `frontend/.env` and add Firebase config and backend URL:
-
-```env
-VITE_BACKEND_URL=http://localhost:5001
-VITE_FIREBASE_API_KEY=...
-VITE_FIREBASE_AUTH_DOMAIN=...
-VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
-VITE_FIREBASE_MESSAGING_SENDER_ID=...
-VITE_FIREBASE_APP_ID=...
-```
-
-## Notable Implementation Notes
-
-- The frontend `AuthContext` listens for Firebase auth state changes and keeps user data synchronized with Firestore.
-- The backend uses in-memory caching for user and virtual card reads to reduce repeated Firestore queries.
-- Transfers are evaluated with CAIGA-inspired rule checks and audit logging, then performed with Firestore batch writes to ensure both sender and recipient balances update together.
-- The API docs page is intentionally hidden from the sidebar menu but still accessible directly.
-- Frontend API requests now normalize `VITE_BACKEND_URL` and remove extra slashes automatically.
-
-## Useful Commands
-
-### Backend
-
-- `npm run dev` — start backend in development
-- `npm start` — start backend in production
-
-### Frontend
-
-- `pnpm run dev` — start frontend development server
-- `pnpm run build` — produce production assets
-- `pnpm run serve` — preview production build
-- `pnpm run typecheck` — run TypeScript checks
-
-## Contact and Support
-
-For support, inspect browser console logs and backend terminal output. Confirm both frontend and backend are using the correct `.env` settings and Firebase credentials.
+- The app is designed as a working prototype rather than a production banking system
+- Transfer decisions are intentionally transparent and explainable for presentation purposes
+- Admin features focus on review, monitoring, and audit-style interactions rather than full banking operations

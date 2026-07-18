@@ -1,10 +1,10 @@
 # Frontend How to Run
 
-This frontend is a Vite-powered React application that connects to Firebase and the SmartBank backend. It now surfaces CAIGA governance and rule-based fraud decisioning in the homepage and feature pages.
+This frontend runs the SmartBank user interface with Firebase authentication, protected routes, dashboards, transfer flows, and admin review views.
 
 ## Prerequisites
 
-- Node.js 18 or higher
+- Node.js 18+
 - pnpm
 
 ## Install dependencies
@@ -16,14 +16,14 @@ pnpm install
 
 ## Environment
 
-Create a `.env` file in the `frontend/` directory based on `frontend/.env.example`:
+Create a local environment file:
 
 ```bash
 cd frontend
 cp .env.example .env
 ```
 
-### Example `.env` values
+Example values:
 
 ```env
 VITE_BACKEND_URL=http://localhost:5001
@@ -35,14 +35,6 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 ```
 
-For production deployment, use:
-
-```env
-VITE_BACKEND_URL=https://smartbankbackend-thbc.onrender.com
-```
-
-The frontend code normalizes backend URLs and removes redundant slashes when building API request paths.
-
 ## Run in development mode
 
 ```bash
@@ -50,7 +42,7 @@ cd frontend
 pnpm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open http://localhost:5173.
 
 ## Build for production
 
@@ -72,3 +64,9 @@ pnpm run serve
 cd frontend
 pnpm run typecheck
 ```
+
+## Notes
+
+- The app uses the backend URL from VITE_BACKEND_URL for all API requests.
+- The frontend automatically trims redundant slashes in API paths.
+- The hidden /api-docs page is available directly by URL.

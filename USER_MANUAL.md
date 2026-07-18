@@ -1,134 +1,95 @@
 # SmartBank User Manual
 
-This user manual explains how to use the SmartBank application from the customer and admin perspectives. It covers the main features, navigation, and behavior in local and production environments.
+This manual describes the current SmartBank experience from the perspective of a customer, an admin, and a developer. It reflects the latest demo flow for authentication, transfers, virtual cards, and governance-style review.
 
 ## Getting Started
 
-### Access the App
-
-- **Frontend URL (production)**: `https://smartbank-6may.onrender.com`
-- **Backend URL (production)**: `https://smartbankbackend-thbc.onrender.com`
-- **Local development**:
-  - Frontend: `http://localhost:5173`
-  - Backend: `http://localhost:5001`
+### Access the app
+- Local frontend: http://localhost:5173
+- Local backend: http://localhost:5001
+- Production frontend: https://smartbank-6may.onrender.com
+- Production backend: https://smartbankbackend-thbc.onrender.com
 
 ### Sign in
-
-- Click `Sign In` on the homepage.
-- Sign in using Google authentication.
-- After signing in, customers are redirected to `/dashboard`.
-- Admin users are redirected to `/admin/dashboard`.
+- Open the landing page and choose Sign In.
+- Sign in with Google through Firebase Auth.
+- Customers are redirected to /dashboard.
+- Admin users are redirected to /admin/dashboard.
 
 ## Customer Experience
 
-### Home Page
-
-- Visit `/home` for the landing page.
-- The homepage now highlights CAIGA governance and transparent fraud detection up front.
-- Use the top navigation to access `Features`, `About`, `Contact`, or `Sign In`.
+### Home and marketing pages
+- Visit /home to see the public landing experience.
+- Use the navigation to reach Features, About, Contact, or Sign In.
+- The landing pages now highlight CAIGA-style governance and transparent security messaging.
 
 ### Dashboard
+- /dashboard shows the current balance, recent activity, and quick links.
+- The layout is designed for a realistic banking demo with recent transactions and account summary cards.
 
-- `/dashboard` shows your current balance, recent transactions, and quick actions.
-- If you are an admin, you will see `/admin/dashboard` instead.
+### Balance
+- /balance displays the current account balance and recent activity context.
+- It is useful before submitting a transfer.
 
-### Balance Page
+### Transfer money
+- Open /transfer to send money to another registered user.
+- Required fields include recipient email, amount, category, and an optional note.
+- The transfer flow now sends country metadata to the backend so the demo can evaluate whether the transaction should be treated as a standard transfer or a review-worthy event.
+- For non-AU/NZ transfers, the app displays a plain-language security notice before the transfer is completed.
+- The backend validates the recipient, checks balance, updates records, and writes an audit log entry when necessary.
 
-- `/balance` displays your account balance and summary of recent activity.
-- Use this page to confirm your current funds before making transfers.
-
-### Transfer Money
-
-- Go to `/transfer` to send money to another user.
-- Required fields:
-  - Recipient email
-  - Amount
-  - Category
-  - Optional note
-- Transfers above $1,000 are flagged by CAIGA-style rule checks, and you will see a plain-language reason before you confirm.
-- The backend validates that the recipient exists and that you have sufficient funds.
-
-### Virtual Card
-
-- `/card` displays your virtual card details.
-- If your card is invalid or missing, the app can generate or repair it automatically.
-- Manage card status via the available controls.
+### Virtual card
+- /card shows the user's virtual card details.
+- If the card is missing or invalid, the app can repair or recreate it automatically.
+- Card status can be managed from the card page.
 
 ### Store
-
-- `/store` is a demo purchase experience that uses your virtual card details.
-- Complete checkout to simulate a transaction and see how purchases appear in your transaction history.
+- /store simulates a purchase experience using the virtual card.
+- Completing a demo checkout creates a transaction that appears in the transaction history.
 
 ### Transactions
-
-- `/transactions` shows your transaction history.
-- Review transfers, deposits, and any flagged activity.
+- /transactions shows the full transaction history for the signed-in user.
+- The page includes pagination so longer histories are easier to browse.
 
 ### Profile
-
-- `/profile` shows your user information and account details.
-- Use your profile page to verify your email and current role.
-
-### Contact
-
-- `/contact` allows you to reach out or submit feedback.
+- /profile displays the current account profile, email, and role.
+- It is helpful for confirming the signed-in identity and access level.
 
 ## Admin Experience
 
-### Admin Dashboard
+### Admin dashboard
+- /admin/dashboard shows the latest flagged transactions and recent activity for the system.
+- Admins can review items from both sections and use pagination to move through longer lists.
 
-- `/admin/dashboard` provides admin-specific analytics and controls.
-- Admin users can review system state and monitor flagged transactions.
+### Admin users
+- /admin/users lists the available users in the system.
+- This page is intended for user review and account oversight.
 
-### Admin Users
-
-- `/admin/users` shows a list of registered users.
-- Use this page to review user profiles and account status.
-
-### Admin Transactions
-
-- `/admin/transactions` lists all transactions across users.
-- Admins can monitor flagged transfers and audit suspicious activity.
+### Admin transactions
+- /admin/transactions provides a centralized transaction review view.
+- Admins can see the transaction list and clear the flagged state when a review is complete.
 
 ## Hidden API Docs
-
-- The API docs page is intentionally hidden from the main navigation.
-- Access it directly at `/api-docs`.
-- This page documents backend routes for developers and auditors.
-
-## Notes on Production and Deployment
-
-### Backend URL Behavior
-
-- In production, the app uses `VITE_BACKEND_URL` to target the backend.
-- The frontend now automatically strips extra trailing slashes, so `https://smartbankbackend-thbc.onrender.com/` and `https://smartbankbackend-thbc.onrender.com` both work.
-
-### Known Deployment Hosts
-
-- Frontend: `https://smartbank-6may.onrender.com`
-- Backend: `https://smartbankbackend-thbc.onrender.com`
+- The API documentation page is intentionally hidden from the main navigation.
+- It is available directly at /api-docs for developers and auditors.
 
 ## Troubleshooting
 
-### Common Issues
+### Common issues
+- Refresh the page if backend requests fail unexpectedly.
+- Make sure the user is signed in before opening protected pages.
+- Verify that the backend and frontend both have the correct environment values.
 
-- If you see errors calling backend APIs, refresh the page or clear the browser cache.
-- Ensure you are signed in before accessing protected pages.
-- If a transfer fails, verify the recipient email is registered and that you have enough balance.
+### Transfer issues
+- Confirm the recipient email belongs to a registered user.
+- Confirm that the sender has enough funds.
+- Review the security notice if the transfer is outside the normal region.
 
-### If Transfer Fails
-
-- Confirm the recipient email is a valid registered user.
-- Check for insufficient funds.
-- Transfers above $1,000 may be flagged by fraud rules.
-
-### If Virtual Card Errors Appear
-
-- Make sure you are signed in and the backend is available.
-- The system regenerates cards automatically if needed.
+### Card issues
+- Ensure that the backend is reachable and the user is authenticated.
+- The app will regenerate or repair the card when needed.
 
 ## Additional Resources
-
-- `frontend/README.md` — frontend developer and setup docs
-- `backend/README.md` — backend developer and setup docs
-- `PROJECT_OVERVIEW.md` — high-level project summary and deployment notes
+- frontend/README.md
+- backend/README.md
+- PROJECT_OVERVIEW.md

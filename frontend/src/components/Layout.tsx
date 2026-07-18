@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'wouter';
 import { useAuth } from '../context/AuthContext';
 import { signOut } from '../firebase/auth';
@@ -25,6 +25,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [clientIp, setClientIp] = useState('Resolving…');
 
   const customerLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -44,6 +45,30 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   ];
 
   const links = user?.role === 'admin' ? [...customerLinks, ...adminLinks] : customerLinks;
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadClientIp = async () => {
+      try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        if (!response.ok) throw new Error('Unable to resolve IP');
+        const data = await response.json();
+        if (!ignore) {
+          setClientIp(typeof data?.ip === 'string' ? data.ip : 'Unavailable');
+        }
+      } catch {
+        if (!ignore) {
+          setClientIp('Unavailable');
+        }
+      }
+    };
+
+    loadClientIp();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const handleSignOut = async () => {
     await signOut();
@@ -95,6 +120,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           <LogOut className="h-5 w-5" />
           Sign Out
         </button>
+        <p className="px-4 pt-1 text-[11px] text-sidebar-foreground/45 break-all">IP: {clientIp}</p>
       </div>
     </div>
   );

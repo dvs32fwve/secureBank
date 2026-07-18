@@ -20,6 +20,9 @@ function formatCurrency(n: number) {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
 }
 
+const FLAGGED_TX_PAGE_SIZE = 3;
+const RECENT_TX_PAGE_SIZE = 5;
+
 function txTypeLabel(type: string) {
   if (type === 'deposit') return 'Deposit';
   if (type === 'withdrawal') return 'Withdrawal';
@@ -30,6 +33,8 @@ export default function AdminDashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [flaggedPage, setFlaggedPage] = useState(1);
+  const [recentPage, setRecentPage] = useState(1);
 
   useEffect(() => {
     setLoading(true);
@@ -60,8 +65,21 @@ export default function AdminDashboard() {
     total,
   }));
 
-  const recentFlagged = flaggedTransactions.slice(0, 5);
-  const recentTransactions = transactions.slice(0, 5);
+  const recentFlagged = flaggedTransactions;
+  const recentTransactions = transactions;
+  const flaggedPageCount = Math.max(1, Math.ceil(recentFlagged.length / FLAGGED_TX_PAGE_SIZE));
+  const recentPageCount = Math.max(1, Math.ceil(recentTransactions.length / RECENT_TX_PAGE_SIZE));
+  const safeFlaggedPage = Math.min(flaggedPage, flaggedPageCount);
+  const safeRecentPage = Math.min(recentPage, recentPageCount);
+  const startFlaggedIndex = (safeFlaggedPage - 1) * FLAGGED_TX_PAGE_SIZE;
+  const startRecentIndex = (safeRecentPage - 1) * RECENT_TX_PAGE_SIZE;
+  const pagedFlaggedTransactions = recentFlagged.slice(startFlaggedIndex, startFlaggedIndex + FLAGGED_TX_PAGE_SIZE);
+  const pagedRecentTransactions = recentTransactions.slice(startRecentIndex, startRecentIndex + RECENT_TX_PAGE_SIZE);
+
+  useEffect(() => {
+    setFlaggedPage(1);
+    setRecentPage(1);
+  }, [transactions.length]);
 
   const container = {
     hidden: { opacity: 0 },
@@ -172,7 +190,7 @@ export default function AdminDashboard() {
                 <p className="text-muted-foreground text-sm">No flagged transactions at the moment.</p>
               ) : (
                 <div className="space-y-3">
-                  {recentFlagged.map((tx) => (
+                  {pagedFlaggedTransactions.map((tx) => (
                     <div key={tx.id} className="rounded-2xl bg-muted/20 p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
@@ -184,6 +202,28 @@ export default function AdminDashboard() {
                       <p className="text-xs text-muted-foreground mt-2">Flagged for review</p>
                     </div>
                   ))}
+                  <div className="flex items-center justify-between border-t border-border pt-3 mt-1">
+                    <p className="text-sm text-muted-foreground">
+                      {recentFlagged.length === 0 ? 'No records' : `Showing ${pagedFlaggedTransactions.length} record${pagedFlaggedTransactions.length === 1 ? '' : 's'} on this page`}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setFlaggedPage((p) => Math.max(1, p - 1))}
+                        disabled={safeFlaggedPage === 1}
+                        className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-sm text-muted-foreground">Page {safeFlaggedPage} of {flaggedPageCount}</span>
+                      <button
+                        onClick={() => setFlaggedPage((p) => Math.min(flaggedPageCount, p + 1))}
+                        disabled={safeFlaggedPage === flaggedPageCount}
+                        className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -200,7 +240,7 @@ export default function AdminDashboard() {
                 <p className="text-muted-foreground text-sm">No recent transactions available.</p>
               ) : (
                 <div className="space-y-3">
-                  {recentTransactions.map((tx) => (
+                  {pagedRecentTransactions.map((tx) => (
                     <div key={tx.id} className="flex items-center justify-between gap-3 rounded-2xl bg-muted/20 p-4">
                       <div>
                         <p className="font-medium">{txTypeLabel(tx.type)}</p>
@@ -212,6 +252,28 @@ export default function AdminDashboard() {
                       </div>
                     </div>
                   ))}
+                  <div className="flex items-center justify-between border-t border-border pt-3 mt-1">
+                    <p className="text-sm text-muted-foreground">
+                      {recentTransactions.length === 0 ? 'No records' : `Showing ${pagedRecentTransactions.length} record${pagedRecentTransactions.length === 1 ? '' : 's'} on this page`}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setRecentPage((p) => Math.max(1, p - 1))}
+                        disabled={safeRecentPage === 1}
+                        className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-sm text-muted-foreground">Page {safeRecentPage} of {recentPageCount}</span>
+                      <button
+                        onClick={() => setRecentPage((p) => Math.min(recentPageCount, p + 1))}
+                        disabled={safeRecentPage === recentPageCount}
+                        className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground disabled:opacity-50"
+                      >
+                        Next
+                      </button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
