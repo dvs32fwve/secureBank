@@ -100,8 +100,11 @@ export default function Transfer() {
         setSecurityNotice(null);
       }
 
+      const flagReason = Array.isArray(data.flagReasons) && data.flagReasons.length > 0 ? data.flagReasons[0] : '';
       const successMessage = data.flagged
-        ? 'Transfer completed successfully. The transaction was flagged for CAIGA review due to the banking-region risk.'
+        ? flagReason
+          ? `Transfer completed successfully. The transaction was flagged for review: ${flagReason}`
+          : 'Transfer completed successfully. The transaction was flagged for CAIGA review.'
         : data.warn
           ? 'Transfer completed successfully. The $1,000 limit warning was recorded without flagging the transaction.'
           : 'Transfer completed successfully';

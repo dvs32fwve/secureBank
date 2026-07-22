@@ -269,11 +269,27 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
     const recipientData = recipientDoc.data();
 
     const countryCode = typeof req.body?.countryCode === 'string' ? req.body.countryCode.toUpperCase() : '';
+    const recentTransferSnap = await db.collection('transactions')
+      .where('userId', '==', senderId)
+      .where('type', '==', 'transfer')
+      .limit(20)
+      .get();
+
+    const recentTransfers = recentTransferSnap.docs
+      .map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }))
+      .filter((tx) => String(tx?.recipient || '').toLowerCase() === normalizedRecipientEmail)
+      .slice(0, 10);
+
     const transferRisk = evaluateTransferRisk({
       amount: parsedAmount,
       category,
       isIncoming: false,
       country: countryCode,
+      recipient: normalizedRecipientEmail,
+      recentTransfers,
     });
 
     const ruleResults = transferRisk.ruleResults;
