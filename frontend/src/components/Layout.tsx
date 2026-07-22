@@ -77,12 +77,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col bg-sidebar border-r border-sidebar-border text-sidebar-foreground">
-      <div className="p-6 flex items-center gap-3 border-b border-sidebar-border">
+      <Link href="/home" className="p-6 flex items-center gap-3 border-b border-sidebar-border hover:bg-sidebar-accent/40 transition-colors">
         <div className="bg-primary/10 p-2 rounded-lg">
           <Banknote className="h-6 w-6 text-primary" />
         </div>
         <span className="font-bold text-xl tracking-tight">SmartBank</span>
-      </div>
+      </Link>
 
       <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
         {links.map((link) => {
@@ -134,10 +134,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
       {/* Mobile Header & Sidebar Toggle */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-sidebar border-b border-sidebar-border z-30 flex items-center justify-between px-4">
-        <div className="flex items-center gap-2">
+        <Link href="/home" className="flex items-center gap-2">
           <Banknote className="h-6 w-6 text-primary" />
           <span className="font-bold text-lg">SmartBank</span>
-        </div>
+        </Link>
         <button onClick={() => setSidebarOpen(true)} className="p-2 text-sidebar-foreground">
           <Menu className="h-6 w-6" />
         </button>
