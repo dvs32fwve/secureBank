@@ -102,7 +102,9 @@ export default function Transfer() {
 
       const successMessage = data.flagged
         ? 'Transfer completed successfully. The transaction was flagged for CAIGA review due to the banking-region risk.'
-        : 'Transfer completed successfully';
+        : data.warn
+          ? 'Transfer completed successfully. The $1,000 limit warning was recorded without flagging the transaction.'
+          : 'Transfer completed successfully';
 
       toast.success(successMessage);
       setForm({ recipient: '', amount: '', category: 'Other', note: '' });

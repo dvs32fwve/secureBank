@@ -56,9 +56,9 @@ export default function Home() {
   };
 
   const heroImages = [
-    'https://www.collidu.com/media/catalog/product/img/7/9/79edaf0db85981a8f053127a25fead0fd91a960a14ba8b53adfe1b8454fdb0c6/mobile-banking-slide1.png',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7b0Iw6mhqotl4xbviG9NPvZjy2HVXFdFyDch8-S_R2YSzpgXbS50RRNvR&s=10',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTR1UxuNWV9OJ5whAa1wii3QEiEmhlQLRs32rKQqYK2Mm3gvH3U0wvsHnH8&s=10',
+    'https://www.usbank.com/content/dam/usbank/en/images/photos/personal-banking/photo-smart-rewards-banner-2026-519x519.webp',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc9fa8xzRNuSGGQrSmRjwWipPhUmqEEs411E9njlCtAJoj_PMhtCpv-0HK&s=10',
+    'https://www.ebankit.com/hs-fs/hubfs/Marketing/1.%20Website%20%3E%202022/2026/ebankIT_Website_Platform_26_One%20platform%20fro%20all%20business%20tiers%201.png?width=527&height=387&name=ebankIT_Website_Platform_26_One%20platform%20fro%20all%20business%20tiers%201.png',
   ];
 
   const tiles = [

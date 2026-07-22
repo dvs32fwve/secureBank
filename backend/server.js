@@ -278,6 +278,7 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
 
     const ruleResults = transferRisk.ruleResults;
     const flagged = transferRisk.flagged;
+    const warn = transferRisk.warn;
     const requiresVerification = transferRisk.requiresVerification;
     const securityNotice = transferRisk.securityNotice;
     const flagReasonText = transferRisk.flagReason;
@@ -299,6 +300,7 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
       category,
       note,
       flagged,
+      warn,
       flagReason: flagReasonText,
       timestamp: admin.firestore.FieldValue.serverTimestamp(),
     });
@@ -357,7 +359,7 @@ app.post('/transfer', verifyFirebaseToken, async (req, res) => {
 
     await batch.commit();
 
-    return res.json({ success: true, message: 'Transfer completed successfully', flagged, requiresVerification, flagReasons, securityNotice });
+    return res.json({ success: true, message: 'Transfer completed successfully', flagged, warn, requiresVerification, flagReasons, securityNotice });
   } catch (error) {
     console.error('Failed to create transfer:', error);
     return res.status(500).json({ error: 'Failed to create transfer' });

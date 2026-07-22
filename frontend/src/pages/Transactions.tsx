@@ -4,7 +4,7 @@ import { getUserTransactions, Transaction } from '../firebase/firestore';
 import { Layout } from '../components/Layout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { motion } from 'framer-motion';
-import { ArrowDownRight, ArrowUpRight, ArrowLeftRight, Flag } from 'lucide-react';
+import { ArrowDownRight, ArrowUpRight, ArrowLeftRight, AlertTriangle, Flag } from 'lucide-react';
 import { format } from 'date-fns';
 
 type Filter = 'all' | 'transfer' | 'deposit' | 'withdrawal';
@@ -94,13 +94,16 @@ export default function Transactions() {
             ) : (
               <div>
                 <div className="divide-y divide-border">
-                  {pagedTransactions.map((tx, i) => (
-                  <motion.div
+                  {pagedTransactions.map((tx, i) => {
+                    const isHighValueWarning = tx.type === 'transfer' && tx.amount > 1000;
+                    const isFlagged = !!tx.flagged && !isHighValueWarning;
+
+                    return <motion.div
                     key={tx.id}
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
-                    className={`flex items-center justify-between p-4 hover:bg-accent/30 transition-colors ${tx.flagged ? 'bg-destructive/5' : ''}`}
+                    className={`flex items-center justify-between p-4 hover:bg-accent/30 transition-colors ${isFlagged ? 'bg-destructive/5' : ''}`}
                     data-testid={`tx-item-${tx.id}`}
                   >
                     <div className="flex items-center gap-3">
@@ -113,9 +116,14 @@ export default function Transactions() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3">
-                      {tx.flagged && (
+                      {isFlagged && (
                         <span className="flex items-center gap-1 text-xs bg-destructive/20 text-destructive px-2 py-1 rounded-full" data-testid="badge-flagged">
                           <Flag className="h-3 w-3" /> Flagged
+                        </span>
+                      )}
+                      {isHighValueWarning && !isFlagged && (
+                        <span className="flex items-center gap-1 text-xs bg-amber-500/15 text-amber-400 px-2 py-1 rounded-full" data-testid="badge-warning">
+                          <AlertTriangle className="h-3 w-3" /> Warning
                         </span>
                       )}
                       <div className="text-right">
@@ -125,8 +133,8 @@ export default function Transactions() {
                         <p className="text-xs text-muted-foreground capitalize">{tx.type}</p>
                       </div>
                     </div>
-                  </motion.div>
-                  ))}
+                  </motion.div>;
+                  })}
                 </div>
                 {filtered.length > 0 && (
                   <div className="flex flex-col gap-3 border-t border-border bg-muted/20 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">

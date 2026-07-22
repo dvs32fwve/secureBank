@@ -13,6 +13,16 @@ test('outgoing transfers over $1,000 warn but do not flag when location is AU', 
   assert.deepEqual(result.ruleResults, []);
 });
 
+test('outgoing transfers over $1,000 show a warning instead of a flag outside the region', () => {
+  const result = evaluateTransferRisk({ amount: 3000, category: 'Other', isIncoming: false, country: 'US' });
+
+  assert.equal(result.flagged, false);
+  assert.equal(result.warn, true);
+  assert.equal(result.requiresVerification, false);
+  assert.equal(result.flagReason, '');
+  assert.equal(result.securityNotice, null);
+});
+
 test('outgoing transfers from outside allowed region are flagged', () => {
   const result = evaluateTransferRisk({ amount: 500, category: 'Other', isIncoming: false, country: 'US' });
 

@@ -128,6 +128,7 @@ export interface Transaction {
   category: string;
   timestamp: Timestamp;
   flagged?: boolean;
+  warn?: boolean;
   flagReason?: string;
 }
 
