@@ -96,7 +96,7 @@ export default function Transactions() {
                 <div className="divide-y divide-border">
                   {pagedTransactions.map((tx, i) => {
                     const isHighValueWarning = tx.type === 'transfer' && tx.amount > 1000;
-                    const isFlagged = !!tx.flagged && !isHighValueWarning;
+                    const isFlagged = !!tx.flagged;
 
                     return <motion.div
                     key={tx.id}

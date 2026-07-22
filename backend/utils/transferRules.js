@@ -15,7 +15,7 @@ const evaluateTransferRisk = ({ amount, category = 'Other', isIncoming = false, 
     };
   }
 
-  const outsideAllowedRegion = !isOverLimit && country && !['AU', 'NZ'].includes(country);
+  const outsideAllowedRegion = country && !['AU', 'NZ'].includes(country);
   const ruleResults = [];
 
   if (outsideAllowedRegion) {
